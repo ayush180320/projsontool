@@ -4,22 +4,19 @@ const fs = require('fs')
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    minWidth: 900,
-    minHeight: 600,
+    width: 1400,
+    height: 860,
+    minWidth: 960,
+    minHeight: 640,
     title: 'JSON Studio Pro',
-    backgroundColor: '#07070f',
+    backgroundColor: '#080b14',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
-    },
-    icon: path.join(__dirname, '../assets/icon.png')
+    }
   })
-
   win.loadFile(path.join(__dirname, 'index.html'))
-
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: 'deny' }
@@ -35,21 +32,21 @@ ipcMain.handle('open-file-dialog', async () => {
   if (canceled || !filePaths.length) return null
   try {
     const content = fs.readFileSync(filePaths[0], 'utf-8')
-    return { path: filePaths[0], name: path.basename(filePaths[0]), content }
+    return { path: filePaths[0], name: path.basename(filePaths[0]), content, size: fs.statSync(filePaths[0]).size }
   } catch (e) {
     return { error: e.message }
   }
 })
 
-ipcMain.handle('save-csv-dialog', async (event, { csvContent, defaultName }) => {
+ipcMain.handle('save-file-dialog', async (event, { content, defaultName, filterName, ext }) => {
   const { canceled, filePath } = await dialog.showSaveDialog({
-    title: 'Save CSV File',
-    defaultPath: defaultName || 'export.csv',
-    filters: [{ name: 'CSV Files', extensions: ['csv'] }]
+    title: 'Save File',
+    defaultPath: defaultName,
+    filters: [{ name: filterName, extensions: [ext] }]
   })
   if (canceled || !filePath) return { canceled: true }
   try {
-    fs.writeFileSync(filePath, csvContent, 'utf-8')
+    fs.writeFileSync(filePath, content, 'utf-8')
     return { success: true, filePath }
   } catch (e) {
     return { error: e.message }
