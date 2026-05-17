@@ -21,20 +21,13 @@
       "assets/**/*"
     ],
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }]
+      "target": [{ "target": "portable", "arch": ["x64"] }]
     },
     "mac": {
       "target": "dmg"
     },
     "linux": {
       "target": "AppImage"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "JSON Studio Pro"
     }
   },
   "keywords": ["json", "viewer", "csv", "visualizer"],
