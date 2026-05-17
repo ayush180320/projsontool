@@ -13,24 +13,14 @@
     "appId": "com.jsonstudiopro.app",
     "productName": "JSON Studio Pro",
     "copyright": "Copyright © 2024",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "src/**/*",
-      "assets/**/*"
-    ],
+    "directories": { "output": "dist" },
+    "files": ["src/**/*"],
     "win": {
       "target": [{ "target": "portable", "arch": ["x64"] }]
     },
-    "mac": {
-      "target": "dmg"
-    },
-    "linux": {
-      "target": "AppImage"
-    }
+    "mac": { "target": "dmg" },
+    "linux": { "target": "AppImage" }
   },
-  "keywords": ["json", "viewer", "csv", "visualizer"],
   "author": "JSON Studio Pro",
   "license": "MIT",
   "devDependencies": {
