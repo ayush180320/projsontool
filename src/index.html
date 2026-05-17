@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Studio Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--mono:'Cascadia Code','Fira Code','Consolas',monospace}
+body{font-family:var(--mono);background:#07070f;color:#b0b0d0;overflow:hidden;height:100vh}
+#app{display:flex;flex-direction:column;height:100vh}
+#titlebar{background:#13131f;display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #1e1e3a;-webkit-app-region:drag}
+#titlebar h1{font-size:13px;font-weight:600;color:#00d4aa;letter-spacing:0.12em}
+.tbadge{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:4px;background:#1e1e3a;color:#5050a0;letter-spacing:0.05em;-webkit-app-region:no-drag}
+#toolbar{display:flex;align-items:center;gap:6px;padding:7px 12px;background:#0c0c1a;border-bottom:1px solid #1a1a30;flex-wrap:wrap;-webkit-app-region:no-drag}
+.tab-btn{font-size:11px;padding:5px 13px;border-radius:5px;border:0.5px solid #222240;background:transparent;color:#606080;cursor:pointer;font-family:var(--mono);transition:all 0.15s}
+.tab-btn.active{background:#1e1e3a;color:#00d4aa;border-color:#00d4aa}
+.tab-btn:hover:not(.active){background:#141428;color:#9090b0}
+.sep{width:0.5px;height:18px;background:#1e1e3a;margin:0 2px}
+.icon-btn{font-size:10px;padding:5px 10px;border-radius:5px;border:0.5px solid #222240;background:transparent;color:#606080;cursor:pointer;font-family:var(--mono);transition:all 0.15s;display:inline-flex;align-items:center;gap:4px}
+.icon-btn:hover{background:#141428;color:#00d4aa;border-color:#00d4aa}
+#main{display:flex;flex:1;overflow:hidden}
+#input-panel{width:250px;min-width:160px;display:flex;flex-direction:column;border-right:0.5px solid #1a1a30;background:#0a0a16}
+#input-panel label{font-size:9px;color:#404060;padding:7px 12px 3px;letter-spacing:0.1em;text-transform:uppercase}
+#drop-zone{margin:8px 10px;border:1px dashed #222240;border-radius:8px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s}
+#drop-zone:hover,#drop-zone.drag-over{border-color:#00d4aa;background:#08140f}
+.dz-icon{font-size:22px;color:#222240;transition:color 0.2s;margin-bottom:5px}
+#drop-zone:hover .dz-icon,#drop-zone.drag-over .dz-icon{color:#00d4aa}
+#dz-label{font-size:10px;color:#404060;margin-top:3px}
+#dz-sub{font-size:9px;color:#2a2a40;margin-top:2px}
+#file-input{display:none}
+.browse-btn{margin-top:7px;font-size:10px;padding:4px 12px;border-radius:4px;border:0.5px solid #222240;background:transparent;color:#606080;cursor:pointer;font-family:var(--mono);transition:all 0.15s}
+.browse-btn:hover{border-color:#00d4aa;color:#00d4aa}
+#input-divider{display:flex;align-items:center;gap:6px;padding:0 10px;margin:3px 0}
+#input-divider span{font-size:9px;color:#222240;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap}
+#input-divider::before,#input-divider::after{content:'';flex:1;height:0.5px;background:#181830}
+#json-input{flex:1;background:transparent;border:none;color:#b0b0d0;font-family:var(--mono);font-size:10.5px;padding:8px 12px;resize:none;outline:none;line-height:1.7;min-height:100px}
+#json-input::placeholder{color:#1e1e38}
+#input-footer{padding:8px 10px;border-top:0.5px solid #1a1a30;display:flex;gap:6px}
+.parse-btn{flex:1;padding:7px;border-radius:5px;border:none;background:#00d4aa;color:#060c0a;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.05em}
+.parse-btn:hover{background:#00eabc}
+#output-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#07070f;min-width:0}
+.view-pane{flex:1;overflow:auto;padding:16px;display:none}
+.view-pane.active{display:block}
+#stats-bar{display:flex;gap:12px;padding:5px 14px;background:#0c0c1a;border-bottom:0.5px solid #1a1a30;font-size:10px;color:#404060;flex-wrap:wrap}
+#stats-bar b{color:#00d4aa;font-weight:500}
+.tree-root{padding:4px 0}
+.tree-node{margin-left:16px;position:relative}
+.tree-node::before{content:'';position:absolute;left:-9px;top:0;bottom:0;border-left:0.5px solid #181830}
+.tree-key{font-size:10.5px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;padding:2px 0;user-select:none}
+.tree-key:hover .tk{color:#9baff0}
+.tk{color:#7b8cde}
+.tree-toggle{font-size:9px;color:#404060;width:11px;text-align:center;flex-shrink:0}
+.tv-str{color:#7ec87e}.tv-num{color:#e8a060}.tv-bool{color:#e07090}.tv-null{color:#606080}
+.tree-badge{font-size:8px;padding:1px 5px;border-radius:3px;background:#141428;color:#404060;margin-left:3px}
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px}
+.meta-card{background:#0e0e1e;border:0.5px solid #1a1a30;border-radius:8px;padding:10px 13px}
+.mk{font-size:8px;color:#404060;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.mv{font-size:13px;color:#c0c0e0;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mt{font-size:9px;color:#404060;margin-top:2px}
+.sec-title{font-size:9px;color:#404060;text-transform:uppercase;letter-spacing:0.12em;margin:16px 0 8px;padding-bottom:4px;border-bottom:0.5px solid #1a1a30}
+#pane-csv{flex-direction:column}
+.csv-bar{display:flex;gap:8px;padding:8px 12px;background:#0c0c1a;border-bottom:0.5px solid #1a1a30;align-items:center;flex-shrink:0}
+.csv-bar span{font-size:10px;color:#404060;flex:1}
+#csv-scroll{overflow:auto;flex:1}
+#csv-tbl{border-collapse:collapse;font-size:10.5px;width:max-content;min-width:100%}
+#csv-tbl th{background:#141428;color:#7b8cde;padding:6px 14px;text-align:left;font-weight:500;border-bottom:0.5px solid #222240;white-space:nowrap;position:sticky;top:0;z-index:1}
+#csv-tbl td{color:#9090b0;padding:5px 14px;border-bottom:0.5px solid #0e0e1e;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+#csv-tbl tr:hover td{background:#0e0e1e}
+#pane-viz{padding:0;overflow:hidden}
+#viz-wrap{width:100%;height:100%;overflow:auto;background:#07070f;cursor:grab;position:relative;user-select:none}
+#viz-wrap:active{cursor:grabbing}
+#viz-stage{position:relative;transform-origin:0 0}
+#viz-stage svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+.jcard{position:absolute;background:#0e0e20;border:1px solid #252545;border-radius:9px;font-family:var(--mono);font-size:10px;overflow:hidden;min-width:150px;max-width:220px;box-shadow:0 4px 20px rgba(0,0,0,0.6)}
+.jcard:hover{border-color:#3a3a6a}
+.jcard-head{padding:6px 11px;background:#131328;border-bottom:0.5px solid #252545;font-size:10px;font-weight:700;color:#00d4aa;letter-spacing:0.06em;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jtype{font-size:8px;padding:1px 5px;border-radius:3px;margin-left:auto;flex-shrink:0;font-weight:500}
+.jtype-obj{background:#1a1a40;color:#7b8cde}
+.jtype-arr{background:#1a140a;color:#c09050}
+.jtype-val{background:#0a180a;color:#7ec87e}
+.jcard-row{display:flex;align-items:baseline;padding:4px 11px;border-bottom:0.5px solid #111124;gap:8px}
+.jcard-row:last-child{border-bottom:none}
+.jcard-row:hover{background:#131328}
+.jcard-k{color:#7b8cde;flex-shrink:0;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.jcard-v{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;font-size:10px}
+.jv-str{color:#7ec87e}.jv-num{color:#e8a060}.jv-bool{color:#e07090}.jv-null{color:#606080}.jv-ref{color:#8888cc;font-style:italic;font-size:9px}
+.jcard-more{padding:4px 11px;font-size:9px;color:#404060;border-top:0.5px solid #111124;text-align:center;background:#0a0a18}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:10px;color:#252545;font-size:11px}
+.empty-state .big{font-size:40px;opacity:0.25;margin-bottom:4px}
+.err{color:#e07090;font-size:11px;padding:12px 14px;background:#160a10;border-radius:7px;border:0.5px solid #301020;line-height:1.6}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#0a0a16}
+::-webkit-scrollbar-thumb{background:#222240;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#3a3a60}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="titlebar">
+    <h1>⬡ JSON STUDIO PRO</h1>
+    <div class="tbadge">MEDIA GRADE v1.0</div>
+  </div>
+  <div id="toolbar">
+    <button class="tab-btn active" onclick="switchTab('tree')">⊞ Tree View</button>
+    <button class="tab-btn" onclick="switchTab('viz')">⬡ Visualizer</button>
+    <button class="tab-btn" onclick="switchTab('meta')">◈ Metadata</button>
+    <button class="tab-btn" onclick="switchTab('csv')">⊟ CSV Export</button>
+    <div class="sep"></div>
+    <button class="icon-btn" onclick="loadSample()">⊕ Load Sample</button>
+    <button class="icon-btn" onclick="copyOutput()">⊡ Copy JSON</button>
+    <button class="icon-btn" onclick="collapseAll()">⊟ Collapse All</button>
+    <button class="icon-btn" onclick="resetView()">⊙ Reset View</button>
+  </div>
+  <div id="main">
+    <div id="input-panel">
+      <div id="drop-zone" ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
+        <div class="dz-icon">⬆</div>
+        <div id="dz-label">Drop .json file here</div>
+        <div id="dz-sub">or use the button below</div>
+        <input type="file" id="file-input" accept=".json,application/json" onchange="onFileInputChange(event)">
+        <button class="browse-btn" onclick="openNativeDialog(event)">Browse File</button>
+      </div>
+      <div id="input-divider"><span>or paste below</span></div>
+      <label>JSON Input</label>
+      <textarea id="json-input" placeholder='{"key": "value"}'></textarea>
+      <div id="input-footer">
+        <button class="parse-btn" onclick="parseJSON()">▶ PARSE JSON</button>
+      </div>
+    </div>
+    <div id="output-panel">
+      <div id="stats-bar">
+        Keys:<b id="s-keys">—</b>
+        Depth:<b id="s-depth">—</b>
+        Arrays:<b id="s-arrays">—</b>
+        Strings:<b id="s-strings">—</b>
+        Numbers:<b id="s-numbers">—</b>
+        File:<b id="s-file">—</b>
+      </div>
+      <div id="pane-tree" class="view-pane active">
+        <div class="empty-state"><div class="big">{ }</div>Upload or paste JSON, then click PARSE</div>
+      </div>
+      <div id="pane-viz" class="view-pane">
+        <div id="viz-wrap"><div id="viz-stage"><svg id="viz-svg"></svg></div></div>
+      </div>
+      <div id="pane-meta" class="view-pane">
+        <div class="empty-state"><div class="big">◈</div>Parse JSON to generate metadata cards</div>
+      </div>
+      <div id="pane-csv" class="view-pane">
+        <div class="csv-bar">
+          <span id="csv-info">No data loaded</span>
+          <button class="icon-btn" onclick="downloadCSV()">⬇ Download CSV</button>
+        </div>
+        <div id="csv-scroll">
+          <div class="empty-state" style="height:40vh"><div class="big">⊟</div>Parse JSON to export as CSV</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+let parsedData=null,currentTab='tree',csvData={},currentFileName=null
+const SAMPLE={"project":"Interstellar","year":2014,"director":"Christopher Nolan","genre":["Sci-Fi","Drama","Adventure"],"rating":8.6,"budget_million":165,"cast":[{"name":"Matthew McConaughey","role":"Cooper","age":44},{"name":"Anne Hathaway","role":"Brand","age":32},{"name":"Jessica Chastain","role":"Murph","age":37}],"awards":{"oscar":true,"bafta":false,"golden_globe":true},"production":{"studio":"Paramount Pictures","country":"USA","language":"English","runtime_min":169},"soundtrack":"Hans Zimmer","box_office_million":773.4,"released":true}
+
+function onDragOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('drag-over')}
+function onDragLeave(){document.getElementById('drop-zone').classList.remove('drag-over')}
+function onDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadFileObject(f)}
+function onFileInputChange(e){const f=e.target.files[0];if(f)loadFileObject(f);e.target.value=''}
+async function openNativeDialog(e){
+  e.stopPropagation()
+  if(window.electronAPI){
+    const result=await window.electronAPI.openFile()
+    if(!result)return
+    if(result.error){setDZ('⚠ Error',result.error,'#e07090','#160a10','#e07090');return}
+    currentFileName=result.name
+    document.getElementById('json-input').value=result.content
+    setDZ('✓ '+result.name,(result.content.length/1024).toFixed(1)+' KB','#00d4aa','#08140f','#00d4aa')
+    parseJSON()
+  }else{document.getElementById('file-input').click()}
+}
+function loadFileObject(file){
+  if(!file.name.endsWith('.json')&&file.type!=='application/json'){setDZ('⚠ Not a .json file','Please upload a JSON file','#e07090','#160a10','#e07090');return}
+  currentFileName=file.name
+  const reader=new FileReader()
+  reader.onload=e=>{document.getElementById('json-input').value=e.target.result;setDZ('✓ '+file.name,(file.size/1024).toFixed(1)+' KB','#00d4aa','#08140f','#00d4aa');parseJSON()}
+  reader.readAsText(file)
+}
+function setDZ(label,sub,col,bg,border){
+  const dz=document.getElementById('drop-zone'),l=document.getElementById('dz-label')
+  l.textContent=label;l.style.color=col
+  document.getElementById('dz-sub').textContent=sub
+  dz.style.background=bg;dz.style.borderColor=border
+}
+function loadSample(){currentFileName='sample.json';document.getElementById('json-input').value=JSON.stringify(SAMPLE,null,2);setDZ('✓ sample.json','demo data','#00d4aa','#08140f','#00d4aa');parseJSON()}
+
+function switchTab(tab){
+  currentTab=tab
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['tree','viz','meta','csv'][i]===tab))
+  document.querySelectorAll('.view-pane').forEach(p=>{p.classList.remove('active');p.style.display='none'})
+  const pane=document.getElementById('pane-'+tab)
+  pane.style.display=tab==='csv'?'flex':'block';pane.classList.add('active')
+  if(tab==='viz'&&parsedData)renderViz()
+}
+
+function parseJSON(){
+  const raw=document.getElementById('json-input').value.trim();if(!raw)return
+  try{
+    parsedData=JSON.parse(raw)
+    updateStats(parsedData);renderTree(parsedData);renderMeta(parsedData);renderCSV(parsedData)
+    if(currentTab==='viz')renderViz()
+  }catch(e){document.getElementById('pane-tree').innerHTML=`<div class="err">⚠ Parse Error: ${e.message}</div>`}
+}
+
+function updateStats(data){
+  let keys=0,arrays=0,strings=0,numbers=0,maxD=0
+  function walk(o,d){maxD=Math.max(maxD,d);if(Array.isArray(o)){arrays++;o.forEach(v=>walk(v,d+1))}else if(o&&typeof o==='object'){const ks=Object.keys(o);keys+=ks.length;ks.forEach(k=>walk(o[k],d+1))}else if(typeof o==='string')strings++;else if(typeof o==='number')numbers++}
+  walk(data,0)
+  document.getElementById('s-keys').textContent=keys;document.getElementById('s-depth').textContent=maxD
+  document.getElementById('s-arrays').textContent=arrays;document.getElementById('s-strings').textContent=strings
+  document.getElementById('s-numbers').textContent=numbers;document.getElementById('s-file').textContent=currentFileName||'pasted'
+}
+
+let nid=0
+function rv(v){if(v===null)return`<span class="tv-null">null</span>`;if(typeof v==='string')return`<span class="tv-str">"${v.length>60?v.slice(0,60)+'…':v}"</span>`;if(typeof v==='boolean')return`<span class="tv-bool">${v}</span>`;if(typeof v==='number')return`<span class="tv-num">${v}</span>`;return''}
+function buildNode(key,val,depth){
+  const id='nd'+(nid++),isO=val&&typeof val==='object',isA=Array.isArray(val)
+  const badge=isA?'array':isO?'object':typeof val
+  const kspan=key!==null?`<span class="tk">"${key}"</span>: `:''
+  if(!isO)return`<div class="tree-node"><span class="tree-key"><span class="tree-toggle"> </span>${kspan}${rv(val)}</span></div>`
+  const lbl=isA?`[${val.length}]`:`{${Object.keys(val).length}}`
+  const kids=isA?val.map((v,i)=>buildNode(i,v,depth+1)).join(''):Object.entries(val).map(([k,v])=>buildNode(k,v,depth+1)).join('')
+  return`<div class="tree-node"><span class="tree-key" onclick="tog('${id}')"><span class="tree-toggle" id="tg${id}">▾</span>${kspan}<span style="color:#303050">${isA?'[':'{'}${lbl}${isA?']':'}'}</span><span class="tree-badge">${badge}</span></span><div id="${id}">${kids}</div></div>`
+}
+function tog(id){const el=document.getElementById(id),t=document.getElementById('tg'+id),h=el.style.display==='none';el.style.display=h?'':'none';if(t)t.textContent=h?'▾':'▸'}
+function renderTree(data){nid=0;document.getElementById('pane-tree').innerHTML=`<div class="tree-root">${buildNode(null,data,0)}</div>`}
+function collapseAll(){document.querySelectorAll('[id^="nd"]').forEach(e=>e.style.display='none');document.querySelectorAll('[id^="tgnd"]').forEach(e=>e.textContent='▸')}
+function copyOutput(){if(parsedData)navigator.clipboard.writeText(JSON.stringify(parsedData,null,2))}
+
+function renderMeta(data){
+  if(typeof data!=='object'||!data)return
+  const flat={};function fl(o,p){if(Array.isArray(o)){flat[p||'root']=`[Array: ${o.length}]`;if(o.length>0&&typeof o[0]==='object')fl(o[0],(p?p+'.':'')+0)}else if(o&&typeof o==='object')Object.entries(o).forEach(([k,v])=>fl(v,p?`${p}.${k}`:k));else flat[p]=o}
+  fl(data)
+  const entries=Object.entries(flat),types={}
+  entries.forEach(([,v])=>{const t=typeof v;types[t]=(types[t]||0)+1})
+  let h='<div class="sec-title">Summary Statistics</div><div class="meta-grid">'
+  h+=`<div class="meta-card"><div class="mk">Total Fields</div><div class="mv">${entries.length}</div><div class="mt">flattened</div></div>`
+  h+=`<div class="meta-card"><div class="mk">Root Keys</div><div class="mv">${Object.keys(data).length}</div><div class="mt">top-level</div></div>`
+  if(currentFileName)h+=`<div class="meta-card"><div class="mk">Source File</div><div class="mv">${currentFileName}</div><div class="mt">uploaded</div></div>`
+  Object.entries(types).forEach(([t,c])=>h+=`<div class="meta-card"><div class="mk">${t}</div><div class="mv">${c}</div><div class="mt">fields</div></div>`)
+  h+='</div><div class="sec-title">Field Breakdown</div><div class="meta-grid">'
+  Object.entries(data).forEach(([k,v])=>{const isA=Array.isArray(v),isO=v&&typeof v==='object'&&!isA;const disp=isA?`[${v.length} items]`:isO?`{${Object.keys(v).length} keys}`:String(v);h+=`<div class="meta-card"><div class="mk">${k}</div><div class="mv">${disp}</div><div class="mt">${isA?'array':isO?'object':typeof v}</div></div>`})
+  h+='</div>'
+  document.getElementById('pane-meta').innerHTML=h
+}
+
+function deepFlatten(obj,prefix,res){
+  if(obj===null||obj===undefined){res[prefix]='';return}
+  if(typeof obj!=='object'){res[prefix]=obj;return}
+  if(Array.isArray(obj)){if(obj.length===0){res[prefix]='[]';return}if(typeof obj[0]!=='object'){res[prefix]=obj.join('; ');return}obj.forEach((item,i)=>deepFlatten(item,prefix?`${prefix}[${i}]`:`[${i}]`,res));return}
+  Object.entries(obj).forEach(([k,v])=>deepFlatten(v,prefix?`${prefix}.${k}`:k,res))
+}
+function renderCSV(data){
+  let rows=Array.isArray(data)?data:null
+  if(!rows){const ak=Object.keys(data).find(k=>Array.isArray(data[k])&&data[k].length>0&&typeof data[k][0]==='object');rows=ak?data[ak]:null}
+  if(!rows)rows=[data]
+  const flatRows=rows.map(r=>{const res={};deepFlatten(r,'',res);return res})
+  const allKeys=[...new Set(flatRows.flatMap(r=>Object.keys(r)))].filter(k=>k!=='')
+  csvData={headers:allKeys,rows:flatRows}
+  document.getElementById('csv-info').textContent=`${flatRows.length} row(s) · ${allKeys.length} column(s)`
+  let html=`<table id="csv-tbl"><thead><tr>${allKeys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`
+  flatRows.forEach(row=>{html+=`<tr>${allKeys.map(k=>`<td title="${String(row[k]??'').replace(/"/g,'&quot;')}">${row[k]??''}</td>`).join('')}</tr>`})
+  document.getElementById('csv-scroll').innerHTML=html+'</tbody></table>'
+}
+async function downloadCSV(){
+  if(!csvData.headers||!csvData.headers.length)return
+  const lines=[csvData.headers.join(','),...csvData.rows.map(r=>csvData.headers.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))]
+  const csvContent=lines.join('\n'),defaultName=(currentFileName||'export').replace('.json','')+'.csv'
+  if(window.electronAPI){await window.electronAPI.saveCSV({csvContent,defaultName})}
+  else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvContent],{type:'text/csv'}));a.download=defaultName;a.click()}
+}
+
+const CARD_W=210,COL_GAP=80,ROW_GAP=18,MAX_ROWS=14
+let vizNodes=[]
+function valDisplay(v){
+  if(v===null)return{html:`<span class="jv-null">null</span>`,ref:false}
+  if(typeof v==='string')return{html:`<span class="jv-str">"${v.length>26?v.slice(0,26)+'…':v}"</span>`,ref:false}
+  if(typeof v==='number')return{html:`<span class="jv-num">${v}</span>`,ref:false}
+  if(typeof v==='boolean')return{html:`<span class="jv-bool">${v}</span>`,ref:false}
+  if(Array.isArray(v))return{html:`<span class="jv-ref">[${v.length} items] →</span>`,ref:true}
+  if(typeof v==='object')return{html:`<span class="jv-ref">{${Object.keys(v).length} keys} →</span>`,ref:true}
+  return{html:'',ref:false}
+}
+function buildGraph(val,label,parentId){
+  const id=vizNodes.length,isArr=Array.isArray(val),isObj=val&&typeof val==='object'&&!isArr
+  if(!isArr&&!isObj){const{html}=valDisplay(val);vizNodes.push({id,parentId,label,type:'val',rows:[{k:null,vHtml:html,ref:false}],childIds:[]});return id}
+  const entries=isArr?val.map((v,i)=>[String(i),v]):Object.entries(val)
+  const rows=[],children=[]
+  entries.forEach(([k,v])=>{const{html,ref}=valDisplay(v);rows.push({k,vHtml:html,ref});if(ref)children.push({key:isArr?`[${k}]`:k,val:v})})
+  vizNodes.push({id,parentId,label,type:isArr?'arr':'obj',rows,childIds:[]})
+  vizNodes[id].childIds=children.map(c=>buildGraph(c.val,c.key,id))
+  return id
+}
+function layoutGraph(){
+  const cols=[]
+  function assignCol(id,col){const n=vizNodes[id];n.col=col;if(!cols[col])cols[col]=[];cols[col].push(id);(n.childIds||[]).forEach(cid=>assignCol(cid,col+1))}
+  if(vizNodes.length)assignCol(0,0)
+  vizNodes.forEach(n=>{const rc=Math.min(n.rows.length,MAX_ROWS);n.h=32+rc*24+(n.rows.length>MAX_ROWS?20:0);n.w=CARD_W})
+  cols.forEach(col=>{let y=24;col.forEach(id=>{vizNodes[id].y=y;y+=vizNodes[id].h+ROW_GAP})})
+  function centerParent(id){const n=vizNodes[id];if(!n.childIds||n.childIds.length===0)return;n.childIds.forEach(cid=>centerParent(cid));const ys=n.childIds.map(cid=>vizNodes[cid].y+vizNodes[cid].h/2);const mid=ys.reduce((a,b)=>a+b,0)/ys.length;n.y=Math.max(24,mid-n.h/2)}
+  if(vizNodes.length)centerParent(0)
+  const maxCol=Math.max(...vizNodes.map(n=>n.col),0)
+  const W=(maxCol+1)*(CARD_W+COL_GAP)+80,H=Math.max(...vizNodes.map(n=>n.y+n.h),400)+60
+  return{W,H}
+}
+function renderViz(){
+  if(!parsedData)return
+  vizNodes=[];buildGraph(parsedData,'root',-1)
+  const{W,H}=layoutGraph()
+  const stage=document.getElementById('viz-stage'),svg=document.getElementById('viz-svg')
+  stage.querySelectorAll('.jcard').forEach(c=>c.remove());svg.innerHTML=''
+  stage.style.width=W+'px';stage.style.height=H+'px'
+  svg.setAttribute('width',W);svg.setAttribute('height',H)
+  vizNodes.forEach(n=>{
+    if(n.parentId<0)return
+    const p=vizNodes[n.parentId]
+    const x1=p.col*(CARD_W+COL_GAP)+CARD_W,y1=p.y+p.h/2
+    const x2=n.col*(CARD_W+COL_GAP),y2=n.y+n.h/2,mx=(x1+x2)/2
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path')
+    path.setAttribute('d',`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`)
+    path.setAttribute('stroke','#2a2a50');path.setAttribute('stroke-width','1.5');path.setAttribute('fill','none')
+    svg.appendChild(path)
+    const arr=document.createElementNS('http://www.w3.org/2000/svg','polygon')
+    arr.setAttribute('points',`${x2},${y2} ${x2-7},${y2-4} ${x2-7},${y2+4}`)
+    arr.setAttribute('fill','#2a2a50');svg.appendChild(arr)
+  })
+  vizNodes.forEach(n=>{
+    const x=n.col*(CARD_W+COL_GAP)
+    const card=document.createElement('div')
+    card.className='jcard';card.style.left=x+'px';card.style.top=n.y+'px';card.style.width=CARD_W+'px'
+    const typeLabel=n.type==='arr'?'array':n.type==='obj'?'object':'value'
+    const typeCls=n.type==='arr'?'jtype-arr':n.type==='obj'?'jtype-obj':'jtype-val'
+    card.innerHTML=`<div class="jcard-head">${n.label}<span class="jtype ${typeCls}">${typeLabel}</span></div>`
+    n.rows.slice(0,MAX_ROWS).forEach(row=>{
+      const rowEl=document.createElement('div');rowEl.className='jcard-row'
+      rowEl.innerHTML=row.k!==null?`<span class="jcard-k">${row.k}</span><span class="jcard-v">${row.vHtml}</span>`:`<span class="jcard-v" style="text-align:left">${row.vHtml}</span>`
+      card.appendChild(rowEl)
+    })
+    if(n.rows.length>MAX_ROWS){const more=document.createElement('div');more.className='jcard-more';more.textContent=`+${n.rows.length-MAX_ROWS} more fields`;card.appendChild(more)}
+    stage.appendChild(card)
+  })
+}
+;(function(){
+  const wrap=document.getElementById('viz-wrap')
+  let drag=false,sx=0,sy=0,sl=0,st=0
+  wrap.addEventListener('mousedown',e=>{drag=true;sx=e.clientX;sy=e.clientY;sl=wrap.scrollLeft;st=wrap.scrollTop;e.preventDefault()})
+  window.addEventListener('mousemove',e=>{if(!drag)return;wrap.scrollLeft=sl-(e.clientX-sx);wrap.scrollTop=st-(e.clientY-sy)})
+  window.addEventListener('mouseup',()=>drag=false)
+})()
+function resetView(){const w=document.getElementById('viz-wrap');w.scrollLeft=0;w.scrollTop=0}
+</script>
+</body>
+</html>
