@@ -307,15 +307,23 @@ document.addEventListener('keydown',e=>{
 })
 
 /* ── File handling ── */
-async function openFile(){
-  if(window.electronAPI){
-    const r=await window.electronAPI.openFile()
-    if(!r)return
-    if(r.error){toast('⚠ '+r.error);return}
-    FNAME=r.name
-    try{DATA=JSON.parse(r.content);setDZ('✅',r.name,(r.size/1024).toFixed(1)+' KB');populateAll(DATA,{name:r.name,size:r.size})}
-    catch(e){toast('⚠ '+e.message)}
-  }else{document.getElementById('file-input').click()}
+async function openFile() {
+  if (window.electronAPI && window.electronAPI.openFile) {
+    try {
+      const r = await window.electronAPI.openFile()
+      if (!r) return
+      if (r.error) { toast('⚠ ' + r.error); return }
+      FNAME = r.name
+      const parsed = JSON.parse(r.content)
+      DATA = parsed
+      setDZ('✅', r.name, (r.content.length / 1024).toFixed(1) + ' KB')
+      populateAll(DATA, { name: r.name, size: r.content.length })
+    } catch(e) {
+      toast('⚠ ' + e.message)
+    }
+  } else {
+    document.getElementById('file-input').click()
+  }
 }
 function ev_over(e){e.preventDefault();document.getElementById('drop-zone').classList.add('drag-over')}
 function ev_leave(){document.getElementById('drop-zone').classList.remove('drag-over')}
@@ -398,11 +406,24 @@ function getSel(){return[...document.querySelectorAll('#csv-fields input[type=ch
 function renderFullReport(){if(!csvKeys.length)return;document.getElementById('full-info').textContent=`${csvRows.length} row(s) · ${csvKeys.length} column(s)`;let html=`<table class="ctbl"><thead><tr>${csvKeys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`;csvRows.forEach(row=>{html+=`<tr>${csvKeys.map(k=>`<td title="${String(row[k]??'')}">${row[k]??''}</td>`).join('')}</tr>`});document.getElementById('csv-full-scroll').innerHTML=html+'</tbody></table>'}
 function makeCSV(keys,rows){return[keys.join(','),...rows.map(r=>keys.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))].join('\r\n')}
 function makeXML(keys,rows){let x=`<?xml version="1.0" encoding="UTF-8"?>\n<report>\n`;rows.forEach(row=>{x+=`  <record>\n`;keys.forEach(k=>{const tag=k.replace(/[^a-zA-Z0-9_]/g,'_')||'field';x+=`    <${tag}>${String(row[k]??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</${tag}>\n`});x+=`  </record>\n`});return x+'</report>'}
-function triggerDownload(content,filename,mimeType){
-  try{
-    if(window.electronAPI){window.electronAPI.saveFile({content,defaultName:filename,filterName:filename.endsWith('.csv')?'CSV Files':'XML Files',ext:filename.endsWith('.csv')?'csv':'xml'}).then(r=>{if(r&&r.success)toast('✓ Saved');else if(r&&r.error)toast('⚠ '+r.error)});return}
-    const blob=new Blob([content],{type:mimeType});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.style.display='none';a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);if(a.parentNode)document.body.removeChild(a)},500);toast('✓ '+filename+' downloaded')
-  }catch(e){toast('⚠ Download error: '+e.message)}
+function triggerDownload(content, filename, mimeType) {
+  try {
+    const blob = new Blob([content], { type: mimeType })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    setTimeout(() => {
+      URL.revokeObjectURL(url)
+      if (a.parentNode) document.body.removeChild(a)
+    }, 1000)
+    toast('✓ ' + filename + ' downloaded')
+  } catch(e) {
+    toast('⚠ Download error: ' + e.message)
+  }
 }
 function base(){return(FNAME||'export').replace('.json','')}
 function dlPrimCSV(){const s=getSel();if(!s.length){toast('Select at least one field');return}triggerDownload(makeCSV(s,csvRows),base()+'_primary.csv','text/csv;charset=utf-8;')}
