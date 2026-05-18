@@ -7,444 +7,1444 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ─── RESET & VARS ─────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--sans:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;--bg:#080b14;--bg2:#0d1120;--bg3:#111827;--bg4:#1a2035;--border:#1e2d45;--border2:#253352;--teal:#00c9a7;--teal2:#00a88a;--blue:#6ea8ff;--purple:#a78bfa;--green:#4ade80;--amber:#fbbf24;--red:#f87171;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+:root{
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --bg:#07090f;--bg2:#0c0f1d;--bg3:#111827;--bg4:#1a2235;--bg5:#1e2a42;
+  --border:#1e2d45;--border2:#2a3d5a;--border3:#3a5070;
+  --teal:#00c9a7;--teal2:#00a88a;--teal3:#00e8c0;
+  --blue:#6ea8ff;--purple:#a78bfa;--green:#4ade80;--amber:#fbbf24;--red:#f87171;--orange:#fb923c;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--text4:#3d5068;
+  --shadow:0 4px 24px rgba(0,0,0,0.6);--shadow2:0 2px 8px rgba(0,0,0,0.4);
+  --radius:10px;--radius2:7px;--radius3:5px
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-size:13px}
+
+/* ─── APP LAYOUT ────────────────────────────────── */
 #app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-#titlebar{background:linear-gradient(135deg,#0d1120,#111827);display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--border);-webkit-app-region:drag}
-#titlebar h1{font-size:13px;font-weight:700;color:var(--teal);letter-spacing:0.05em}
-.ver{margin-left:auto;font-size:9px;padding:2px 8px;border-radius:20px;background:#1a2540;color:var(--text3);font-family:var(--mono);-webkit-app-region:no-drag}
-#toolbar{display:flex;align-items:center;gap:5px;padding:6px 14px;background:var(--bg2);border-bottom:1px solid var(--border);-webkit-app-region:no-drag}
-.tab-btn{font-size:11px;font-weight:500;padding:5px 12px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans);transition:all 0.15s;display:flex;align-items:center;gap:5px}
-.tab-btn.active{background:var(--bg4);color:var(--teal);border-color:var(--border2)}
+
+/* ─── TITLEBAR ──────────────────────────────────── */
+#titlebar{
+  background:linear-gradient(135deg,#0c0f1d 0%,#111827 100%);
+  display:flex;align-items:center;gap:10px;
+  padding:11px 20px;border-bottom:1px solid var(--border);
+  flex-shrink:0;-webkit-app-region:drag
+}
+#titlebar .logo{font-size:20px;filter:drop-shadow(0 0 8px rgba(0,201,167,0.4))}
+#titlebar h1{font-size:14px;font-weight:700;color:var(--teal);letter-spacing:0.06em}
+#titlebar .sub{font-size:10px;color:var(--text3);margin-left:4px;font-family:var(--mono)}
+.tbadge{margin-left:auto;font-size:9px;padding:3px 10px;border-radius:20px;
+  background:linear-gradient(135deg,#1a2540,#1e2d45);color:var(--text3);
+  border:1px solid var(--border);font-family:var(--mono);letter-spacing:0.05em;-webkit-app-region:no-drag}
+
+/* ─── TOOLBAR ───────────────────────────────────── */
+#toolbar{
+  display:flex;align-items:center;gap:4px;
+  padding:7px 16px;background:var(--bg2);
+  border-bottom:1px solid var(--border);flex-shrink:0;-webkit-app-region:no-drag
+}
+.tab-btn{
+  font-size:11px;font-weight:500;padding:6px 14px;border-radius:var(--radius2);
+  border:1px solid transparent;background:transparent;color:var(--text3);
+  cursor:pointer;font-family:var(--sans);transition:all 0.15s;display:flex;align-items:center;gap:6px
+}
+.tab-btn.active{background:var(--bg4);color:var(--teal);border-color:var(--border2);box-shadow:0 0 12px rgba(0,201,167,0.1)}
 .tab-btn:hover:not(.active){background:var(--bg3);color:var(--text2)}
-.tab-badge{font-size:8px;padding:1px 5px;border-radius:10px;background:#1e3a2e;color:var(--teal)}
-#main{display:flex;flex:1;overflow:hidden}
-#sidebar{width:215px;min-width:175px;display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--bg2);overflow-y:auto}
-.sb-sec{padding:11px 13px;border-bottom:1px solid var(--border)}
-.sb-lbl{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
-#drop-zone{border:1.5px dashed var(--border2);border-radius:9px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg3)}
-#drop-zone:hover,#drop-zone.drag-over{border-color:var(--teal);background:#0a1a14}
-.dz-icon{font-size:22px;margin-bottom:5px}
-#dz-label{font-size:10px;font-weight:600;color:var(--text2);margin-top:3px}
-#dz-sub{font-size:9px;color:var(--text3);margin-top:2px}
+.tab-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0}
+
+/* ─── MAIN LAYOUT ───────────────────────────────── */
+#main{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* ─── SIDEBAR ───────────────────────────────────── */
+#sidebar{
+  width:240px;min-width:200px;
+  display:flex;flex-direction:column;
+  border-right:1px solid var(--border);
+  background:var(--bg2);overflow-y:auto;flex-shrink:0
+}
+.sb-sec{padding:14px 15px;border-bottom:1px solid var(--border)}
+.sb-lbl{
+  font-size:9px;font-weight:700;color:var(--text3);
+  letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px
+}
+.sb-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Drop zone — larger */
+#drop-zone{
+  border:2px dashed var(--border2);border-radius:var(--radius);
+  padding:24px 12px;text-align:center;cursor:pointer;
+  transition:all 0.2s;background:var(--bg3);position:relative;overflow:hidden
+}
+#drop-zone::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 50%,rgba(0,201,167,0.03),transparent 70%);
+  pointer-events:none
+}
+#drop-zone:hover,#drop-zone.drag-over{
+  border-color:var(--teal);background:rgba(0,201,167,0.04);
+  box-shadow:0 0 20px rgba(0,201,167,0.08)
+}
+#drop-zone:hover #dz-icon,#drop-zone.drag-over #dz-icon{transform:scale(1.1);filter:drop-shadow(0 0 8px rgba(0,201,167,0.5))}
+#dz-icon{font-size:32px;margin-bottom:8px;transition:all 0.2s;display:block}
+#dz-label{font-size:12px;font-weight:600;color:var(--text2);margin-top:4px;transition:color 0.2s}
+#dz-sub{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5}
 #file-input{display:none}
-.browse-btn{margin-top:7px;font-size:10px;font-weight:500;padding:5px 0;border-radius:6px;border:1px solid var(--border2);background:var(--bg4);color:var(--text2);cursor:pointer;font-family:var(--sans);transition:all 0.15s;width:100%}
-.browse-btn:hover{border-color:var(--teal);color:var(--teal)}
-.sb-btn{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--sans);font-size:10px;font-weight:500;transition:all 0.15s;width:100%;margin-bottom:4px}
-.sb-btn:hover{background:var(--bg3);color:var(--teal);border-color:var(--teal)}
-.fi-card{background:var(--bg3);border-radius:7px;padding:8px 10px;border:1px solid var(--border)}
-.fi-name{font-size:10px;font-weight:600;color:var(--teal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fi-meta{font-size:9px;color:var(--text3);margin-top:2px}
-.fi-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:7px}
-.fi-stat{background:var(--bg2);border-radius:4px;padding:4px 6px}
-.fi-sv{font-size:12px;font-weight:700;color:var(--teal);font-family:var(--mono)}
-.fi-sk{font-size:8px;color:var(--text3);margin-top:1px}
-#output-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.view-pane{flex:1;display:none;flex-direction:column;overflow:hidden}
+.browse-btn{
+  margin-top:10px;font-size:11px;font-weight:600;padding:8px 0;
+  border-radius:var(--radius2);border:1px solid var(--border2);
+  background:linear-gradient(135deg,var(--bg4),var(--bg5));
+  color:var(--text2);cursor:pointer;font-family:var(--sans);
+  transition:all 0.15s;width:100%;letter-spacing:0.02em
+}
+.browse-btn:hover{border-color:var(--teal);color:var(--teal);box-shadow:0 0 10px rgba(0,201,167,0.1)}
+
+/* File info card */
+.fi-card{
+  background:linear-gradient(135deg,var(--bg3),var(--bg4));
+  border-radius:var(--radius);padding:10px 12px;
+  border:1px solid var(--border2);position:relative;overflow:hidden
+}
+.fi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--teal2));border-radius:var(--radius) var(--radius) 0 0}
+.fi-name{font-size:11px;font-weight:700;color:var(--teal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}
+.fi-meta{font-size:10px;color:var(--text3);margin-top:3px}
+.fi-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:8px}
+.fi-stat{background:var(--bg2);border-radius:var(--radius3);padding:5px 7px;border:1px solid var(--border)}
+.fi-sv{font-size:14px;font-weight:700;color:var(--teal);font-family:var(--mono);line-height:1}
+.fi-sk{font-size:8px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:0.06em}
+
+/* Sidebar buttons */
+.sb-btn{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  border-radius:var(--radius2);border:1px solid var(--border);
+  background:transparent;color:var(--text2);cursor:pointer;
+  font-family:var(--sans);font-size:11px;font-weight:500;
+  transition:all 0.15s;width:100%;margin-bottom:4px;text-align:left
+}
+.sb-btn:hover{background:var(--bg3);color:var(--teal);border-color:var(--teal);box-shadow:0 0 8px rgba(0,201,167,0.08)}
+.sb-btn .sb-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.sb-btn-danger:hover{color:var(--red);border-color:var(--red);box-shadow:0 0 8px rgba(248,113,113,0.1)}
+
+/* ─── OUTPUT PANEL ──────────────────────────────── */
+#output-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0}
+
+/* ─── VIEW PANES ────────────────────────────────── */
+/* CRITICAL: all panes use flex column with overflow hidden */
+.view-pane{flex:1;display:none;flex-direction:column;overflow:hidden;min-height:0}
 .view-pane.active{display:flex}
-/* Tree */
-#tree-topbar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0;-webkit-app-region:no-drag}
-#tree-search{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 10px 5px 30px;color:var(--text);font-family:var(--sans);font-size:11px;outline:none;width:180px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:9px center}
-#tree-search:focus{border-color:var(--teal)}
-#tree-match-info{font-size:10px;color:var(--text3);white-space:nowrap;min-width:55px;font-family:var(--mono)}
-.tree-nav-btn{font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s}
-.tree-nav-btn:hover{border-color:var(--teal);color:var(--teal)}
-.sep2{width:1px;height:16px;background:var(--border)}
-.sm-btn{font-size:10px;padding:4px 9px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans);transition:all 0.15s}
-.sm-btn:hover{border-color:var(--teal);color:var(--teal)}
-#tree-scroll{overflow:auto;flex:1;padding:14px}
-.tree-node{margin-left:16px;position:relative}
-.tree-node::before{content:'';position:absolute;left:-8px;top:0;bottom:0;border-left:1px solid var(--border)}
-.tree-key{font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;padding:2px 3px;user-select:none;font-family:var(--mono);border-radius:3px}
-.tree-key:hover .tk{color:#93c5fd}
-.tk{color:var(--blue)}.tree-toggle{font-size:9px;color:var(--text3);width:12px;text-align:center}
-.tv-str{color:var(--green)}.tv-num{color:var(--amber)}.tv-bool{color:var(--red)}.tv-null{color:var(--text3)}
-.tree-badge{font-size:8px;padding:1px 4px;border-radius:3px;background:var(--bg4);color:var(--text3);margin-left:2px}
-.tree-match{background:rgba(0,201,167,0.12);border-radius:3px;outline:1px solid rgba(0,201,167,0.35)}
-.tree-match-active{background:rgba(251,191,36,0.18);outline:1px solid rgba(251,191,36,0.55)}
-/* Visualizer */
+
+/* ─── TREE VIEW ─────────────────────────────────── */
+#tree-topbar{
+  display:flex;align-items:center;gap:6px;padding:9px 14px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  flex-shrink:0;flex-wrap:wrap;-webkit-app-region:no-drag
+}
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap .s-icon{position:absolute;left:9px;font-size:12px;color:var(--text3);pointer-events:none}
+.search-input{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:20px;
+  padding:5px 10px 5px 28px;color:var(--text);font-family:var(--sans);font-size:11px;
+  outline:none;width:185px;transition:border-color 0.15s,box-shadow 0.15s
+}
+.search-input:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,201,167,0.1)}
+.match-badge{
+  font-size:10px;color:var(--teal);white-space:nowrap;
+  font-family:var(--mono);min-width:50px;font-weight:600
+}
+.nav-btn{
+  font-size:12px;padding:4px 8px;border-radius:var(--radius3);
+  border:1px solid var(--border);background:transparent;color:var(--text3);
+  cursor:pointer;transition:all 0.15s;font-weight:600
+}
+.nav-btn:hover{border-color:var(--teal);color:var(--teal)}
+.divider{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.sm-btn{
+  font-size:10px;padding:5px 10px;border-radius:var(--radius3);
+  border:1px solid var(--border);background:transparent;color:var(--text3);
+  cursor:pointer;font-family:var(--sans);transition:all 0.15s;white-space:nowrap
+}
+.sm-btn:hover{border-color:var(--teal);color:var(--teal);background:rgba(0,201,167,0.05)}
+
+/* Tree scroll area — SCROLLABLE */
+#tree-scroll{overflow-y:auto;overflow-x:auto;flex:1;min-height:0;padding:14px 16px}
+
+.tree-node{margin-left:18px;position:relative}
+.tree-node::before{content:'';position:absolute;left:-9px;top:0;bottom:0;border-left:1px solid var(--border)}
+.tree-row{display:flex;align-items:center;gap:0;border-radius:var(--radius3);transition:background 0.1s;cursor:pointer}
+.tree-row:hover{background:rgba(110,168,255,0.06)}
+.tree-row.tree-match{background:rgba(0,201,167,0.1);outline:1px solid rgba(0,201,167,0.3)}
+.tree-row.tree-match-active{background:rgba(251,191,36,0.15);outline:1px solid rgba(251,191,36,0.5)}
+.tree-key{font-size:11px;display:inline-flex;align-items:center;gap:3px;padding:2px 4px;user-select:none;font-family:var(--mono)}
+.tree-toggle{font-size:9px;color:var(--text3);width:12px;text-align:center;flex-shrink:0}
+.tk{color:var(--blue);font-weight:500}
+.tv-str{color:var(--green)}.tv-num{color:var(--amber)}.tv-bool{color:var(--red)}.tv-null{color:var(--text3);font-style:italic}
+.tree-badge{font-size:8px;padding:1px 5px;border-radius:10px;background:var(--bg5);color:var(--text3);margin-left:3px;border:1px solid var(--border)}
+.copy-flash{background:rgba(0,201,167,0.15)!important;transition:background 0.1s}
+
+/* ─── VISUALIZER ─────────────────────────────────── */
 #pane-viz{position:relative}
-#viz-topbar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:5px;z-index:20;background:var(--bg2);border:1px solid var(--border2);border-radius:30px;padding:5px 10px;box-shadow:0 4px 20px rgba(0,0,0,0.5);-webkit-app-region:no-drag}
-.vtb-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--sans);transition:all 0.15s;font-weight:500}
+#viz-topbar{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:5px;z-index:20;
+  background:rgba(12,15,29,0.95);backdrop-filter:blur(12px);
+  border:1px solid var(--border2);border-radius:30px;
+  padding:6px 12px;box-shadow:var(--shadow);-webkit-app-region:no-drag
+}
+.vtb-btn{
+  font-size:11px;padding:4px 11px;border-radius:20px;border:none;
+  background:transparent;color:var(--text2);cursor:pointer;
+  font-family:var(--sans);transition:all 0.15s;font-weight:500;white-space:nowrap
+}
 .vtb-btn:hover{background:var(--bg4);color:var(--teal)}
-#viz-zoom-lbl{font-size:10px;color:var(--text3);padding:0 3px;font-family:var(--mono);min-width:34px;text-align:center}
-.v-sep{width:1px;height:14px;background:var(--border)}
-#viz-find-wrap{position:relative;display:flex;align-items:center}
-#viz-find{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:4px 38px 4px 28px;color:var(--text);font-family:var(--sans);font-size:10px;outline:none;width:140px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:8px center}
-#viz-find:focus{border-color:var(--teal)}
-#viz-find-count{position:absolute;right:8px;font-size:9px;color:var(--teal);white-space:nowrap;pointer-events:none;font-family:var(--mono);font-weight:600}
-#viz-wrap{width:100%;height:100%;overflow:auto;background:radial-gradient(ellipse at 50% 50%,#0d1525,#080b14);cursor:grab;position:relative;user-select:none}
-#viz-wrap.panning{cursor:grabbing}
+#viz-zoom-lbl{font-size:10px;color:var(--teal);padding:0 4px;font-family:var(--mono);min-width:38px;text-align:center;font-weight:600}
+.v-sep{width:1px;height:16px;background:var(--border);flex-shrink:0}
+.viz-search-wrap{position:relative;display:flex;align-items:center}
+#viz-find{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:20px;
+  padding:4px 38px 4px 26px;color:var(--text);font-family:var(--sans);
+  font-size:10px;outline:none;width:150px;transition:border-color 0.15s
+}
+#viz-find:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,201,167,0.1)}
+.viz-s-icon{position:absolute;left:9px;font-size:11px;color:var(--text3);pointer-events:none}
+#viz-find-count{position:absolute;right:9px;font-size:9px;color:var(--teal);white-space:nowrap;pointer-events:none;font-family:var(--mono);font-weight:700}
+#viz-wrap{width:100%;height:100%;overflow:auto;background:radial-gradient(ellipse at 30% 40%,#0d1a2e,#07090f 60%);cursor:grab;position:relative;user-select:none}
 #viz-wrap::-webkit-scrollbar{width:6px;height:6px}
+#viz-wrap::-webkit-scrollbar-track{background:transparent}
 #viz-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+#viz-wrap.panning{cursor:grabbing}
 #viz-stage{position:relative;transform-origin:0 0}
 #viz-stage svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
-.jcard{position:absolute;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;font-family:var(--mono);font-size:10px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.5);transition:border-color 0.15s,box-shadow 0.15s}
-.jcard:hover{border-color:rgba(0,201,167,0.4);box-shadow:0 6px 28px rgba(0,201,167,0.08)}
-.jcard.found-hl{border-color:var(--teal)!important;box-shadow:0 0 14px rgba(0,201,167,0.3)!important}
-.jcard.found-active{border-color:var(--amber)!important;box-shadow:0 0 18px rgba(251,191,36,0.35)!important}
-.jcard-head{padding:6px 10px;font-size:10px;font-weight:700;color:var(--teal);letter-spacing:0.05em;display:flex;align-items:center;gap:5px;border-bottom:1px solid var(--border)}
-.hobj{background:linear-gradient(135deg,#0f1628,#111827)}.harr{background:linear-gradient(135deg,#140f08,#1a1208)}.hval{background:linear-gradient(135deg,#080f0a,#0a1410)}
-.jtype{font-size:8px;padding:2px 5px;border-radius:8px;margin-left:auto;flex-shrink:0;font-weight:600;font-family:var(--sans)}
-.jtype-obj{background:#1a2050;color:var(--blue)}.jtype-arr{background:#1a1408;color:var(--amber)}.jtype-val{background:#0a1a0e;color:var(--green)}
-.jcard-row{display:flex;align-items:center;padding:3px 10px;border-bottom:1px solid #0f1828;gap:5px}
-.jcard-row:last-child{border-bottom:none}.jcard-row:hover{background:#0f1828}
-.jcard-k{color:var(--blue);flex-shrink:0;max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.jcard-v{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
-.jv-str{color:var(--green)}.jv-num{color:var(--amber)}.jv-bool{color:var(--red)}.jv-null{color:var(--text3)}.jv-ref{color:var(--purple);font-size:9px}
-.jcard-more{padding:3px 10px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);text-align:center;background:var(--bg3)}
-#viz-legend{position:absolute;bottom:12px;left:12px;background:rgba(13,17,32,0.92);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:9px 11px;z-index:10}
-.lg-t{font-size:8px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
-.lg-r{display:flex;align-items:center;gap:6px;font-size:9px;color:var(--text2);margin-top:3px}
-.lg-d{width:9px;height:9px;border-radius:2px;flex-shrink:0}
-/* Metadata */
-#meta-topbar{display:flex;align-items:center;gap:7px;padding:9px 13px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;-webkit-app-region:no-drag}
-#meta-find{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 10px 5px 30px;color:var(--text);font-family:var(--sans);font-size:11px;outline:none;flex:1;min-width:120px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:9px center}
-#meta-find:focus{border-color:var(--teal)}
-.meta-btn{font-size:10px;font-weight:500;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans);transition:all 0.15s;white-space:nowrap}
-.meta-btn:hover{border-color:var(--teal);color:var(--teal)}
-#meta-scroll{overflow-y:auto;flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-.meta-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;padding-bottom:4px}
-.mst-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;text-align:center}
-.mst-v{font-size:20px;font-weight:700;color:var(--teal);font-family:var(--mono);line-height:1}
-.mst-k{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-top:4px}
-.msec-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color 0.15s}
-.msec-wrap:hover{border-color:var(--border2)}
-.msec-hd{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;user-select:none;transition:background 0.15s}
+.jcard{
+  position:absolute;background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--radius);font-family:var(--mono);font-size:10px;
+  overflow:hidden;box-shadow:var(--shadow);transition:border-color 0.15s,box-shadow 0.15s;
+  cursor:default
+}
+.jcard:hover{border-color:rgba(0,201,167,0.4);box-shadow:0 6px 30px rgba(0,201,167,0.1)}
+.jcard.found-hl{border-color:rgba(0,201,167,0.6)!important;box-shadow:0 0 16px rgba(0,201,167,0.25)!important}
+.jcard.found-active{border-color:var(--amber)!important;box-shadow:0 0 20px rgba(251,191,36,0.3)!important}
+.jcard-head{
+  padding:7px 11px;font-size:10px;font-weight:700;color:var(--teal);
+  letter-spacing:0.05em;display:flex;align-items:center;gap:5px;border-bottom:1px solid var(--border);
+  cursor:pointer;user-select:none
+}
+.jcard-head:active{opacity:0.8}
+.hobj{background:linear-gradient(135deg,#0e1628,#111827)}
+.harr{background:linear-gradient(135deg,#160f06,#1a1206)}
+.hval{background:linear-gradient(135deg,#060f0a,#0a1412)}
+.jtype{font-size:8px;padding:2px 6px;border-radius:8px;margin-left:auto;flex-shrink:0;font-weight:700;font-family:var(--sans)}
+.jtype-obj{background:rgba(110,168,255,0.15);color:var(--blue);border:1px solid rgba(110,168,255,0.2)}
+.jtype-arr{background:rgba(251,191,36,0.12);color:var(--amber);border:1px solid rgba(251,191,36,0.2)}
+.jtype-val{background:rgba(74,222,128,0.12);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
+.jcard-row{
+  display:flex;align-items:center;padding:4px 11px;border-bottom:1px solid rgba(30,45,69,0.6);
+  gap:6px;cursor:pointer;transition:background 0.1s
+}
+.jcard-row:last-child{border-bottom:none}
+.jcard-row:hover{background:rgba(110,168,255,0.06)}
+.jcard-row:active{background:rgba(0,201,167,0.1)}
+.jcard-k{color:var(--blue);flex-shrink:0;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;font-weight:500}
+.jcard-v{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;font-size:10px}
+.jv-str{color:var(--green)}.jv-num{color:var(--amber)}.jv-bool{color:var(--red)}.jv-null{color:var(--text3);font-style:italic}.jv-ref{color:var(--purple);font-size:9px}
+.jcard-more{padding:4px 11px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);text-align:center;background:var(--bg3);cursor:default}
+#viz-legend{
+  position:absolute;bottom:14px;left:14px;
+  background:rgba(12,15,29,0.92);backdrop-filter:blur(10px);
+  border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;
+  z-index:10;display:flex;flex-direction:column;gap:5px
+}
+.lg-t{font-size:8px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px}
+.lg-r{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--text2)}
+.lg-d{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ─── METADATA ───────────────────────────────────── */
+/* The entire meta pane uses flex column — critical for scroll */
+#pane-meta{overflow:hidden}
+
+#meta-topbar{
+  display:flex;align-items:center;gap:7px;padding:9px 14px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  flex-shrink:0;flex-wrap:wrap;-webkit-app-region:no-drag
+}
+.meta-btn{
+  font-size:10px;font-weight:500;padding:5px 11px;border-radius:var(--radius3);
+  border:1px solid var(--border);background:transparent;color:var(--text3);
+  cursor:pointer;font-family:var(--sans);transition:all 0.15s;white-space:nowrap
+}
+.meta-btn:hover{border-color:var(--teal);color:var(--teal);background:rgba(0,201,167,0.05)}
+
+/* CRITICAL FIX: meta-scroll must have min-height:0 and overflow-y:auto */
+#meta-scroll{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  min-height:0;
+  padding:14px 15px;
+  display:flex;
+  flex-direction:column;
+  gap:9px
+}
+
+/* Stat cards */
+.meta-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:7px;flex-shrink:0}
+.mst{
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 12px;text-align:center;cursor:pointer;transition:all 0.15s
+}
+.mst:hover{border-color:var(--teal);box-shadow:0 0 10px rgba(0,201,167,0.1)}
+.mst-v{font-size:22px;font-weight:700;color:var(--teal);font-family:var(--mono);line-height:1}
+.mst-k{font-size:8px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+
+/* Section cards */
+.msec{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;flex-shrink:0;
+  transition:border-color 0.15s
+}
+.msec:hover{border-color:var(--border2)}
+.msec-hd{
+  display:flex;align-items:center;gap:8px;padding:10px 13px;
+  cursor:pointer;user-select:none;transition:background 0.15s
+}
 .msec-hd:hover{background:var(--bg3)}
-.msec-emoji{font-size:14px;flex-shrink:0}
-.msec-title{font-size:12px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msec-emoji{font-size:15px;flex-shrink:0}
+.msec-title{font-size:12px;font-weight:600;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .msec-pills{display:flex;gap:4px;align-items:center;flex-shrink:0}
-.mpill{font-size:8px;font-weight:700;padding:2px 6px;border-radius:8px}
-.pill-obj{background:#1a2050;color:var(--blue)}.pill-arr{background:#1a1408;color:var(--amber)}.pill-str{background:#0a1a0e;color:var(--green)}.pill-num{background:#1a1208;color:var(--amber)}.pill-bool{background:#1a0a10;color:var(--red)}.pill-null{background:var(--bg4);color:var(--text3)}
-.msec-cp{font-size:9px;padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans);transition:all 0.15s;flex-shrink:0}
-.msec-cp:hover{border-color:var(--teal);color:var(--teal)}
-.msec-arrow{font-size:11px;color:var(--text3);transition:transform 0.2s;flex-shrink:0;margin-left:2px}
+.mpill{font-size:8px;font-weight:700;padding:2px 7px;border-radius:8px}
+.pill-obj{background:rgba(110,168,255,0.12);color:var(--blue);border:1px solid rgba(110,168,255,0.2)}
+.pill-arr{background:rgba(251,191,36,0.1);color:var(--amber);border:1px solid rgba(251,191,36,0.2)}
+.pill-str{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.2)}
+.pill-num{background:rgba(251,191,36,0.1);color:var(--amber);border:1px solid rgba(251,191,36,0.2)}
+.pill-bool{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.2)}
+.pill-null{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+.msec-copy-btn{
+  font-size:9px;padding:3px 8px;border-radius:var(--radius3);
+  border:1px solid var(--border);background:transparent;color:var(--text3);
+  cursor:pointer;font-family:var(--sans);transition:all 0.15s;flex-shrink:0
+}
+.msec-copy-btn:hover{border-color:var(--teal);color:var(--teal)}
+.msec-arrow{font-size:11px;color:var(--text3);transition:transform 0.2s;flex-shrink:0;margin-left:2px;font-weight:700}
 .msec-arrow.open{transform:rotate(90deg)}
-.msec-bd{display:none;border-top:1px solid var(--border)}
-.msec-bd.open{display:block}
-.mfield-row{display:grid;grid-template-columns:minmax(120px,35%) 1fr auto auto;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);transition:background 0.1s}
-.mfield-row:last-child{border-bottom:none}
-.mfield-row:hover{background:var(--bg3)}
-.mfield-key{color:var(--blue);font-family:var(--mono);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mfield-val{font-family:var(--mono);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mfield-type{font-size:8px;font-weight:700;padding:2px 6px;border-radius:8px;white-space:nowrap;flex-shrink:0}
-.mfield-copy{font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans);transition:all 0.15s;flex-shrink:0;opacity:0}
-.mfield-row:hover .mfield-copy{opacity:1}
-.mfield-copy:hover{border-color:var(--teal);color:var(--teal)}
-.mfield-expand-row{padding:4px 12px 8px;border-bottom:1px solid var(--border)}
-.mfield-full{font-size:9px;color:var(--text2);white-space:pre-wrap;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:7px 9px;font-family:var(--mono);max-height:140px;overflow-y:auto;line-height:1.6}
-.mtbl-header{display:grid;grid-template-columns:minmax(120px,35%) 1fr auto auto;gap:8px;padding:5px 12px;background:var(--bg3);border-bottom:1px solid var(--border)}
-.mtbl-th{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em}
-/* CSV */
-#csv-header{background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
-#csv-subtabs{display:flex;padding:0 13px;border-bottom:1px solid var(--border)}
-.csv-stab{font-size:11px;font-weight:500;padding:8px 14px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--sans);border-bottom:2px solid transparent;transition:all 0.15s}
-.csv-stab.active{color:var(--teal);border-bottom-color:var(--teal)}
-.csv-stab:hover:not(.active){color:var(--text2)}
-.csv-sub{display:none;flex:1;flex-direction:column;overflow:hidden}
+.msec-body{display:none;border-top:1px solid var(--border)}
+.msec-body.open{display:block}
+
+/* Field table header */
+.mfld-hdr{
+  display:grid;grid-template-columns:minmax(130px,38%) 1fr 72px 28px;
+  gap:8px;padding:5px 13px;background:var(--bg3);border-bottom:1px solid var(--border)
+}
+.mfld-th{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em}
+
+/* Field rows */
+.mfld-row{
+  display:grid;grid-template-columns:minmax(130px,38%) 1fr 72px 28px;
+  align-items:center;gap:8px;padding:7px 13px;
+  border-bottom:1px solid rgba(30,45,69,0.5);
+  transition:background 0.1s;cursor:pointer
+}
+.mfld-row:last-child{border-bottom:none}
+.mfld-row:hover{background:rgba(110,168,255,0.04)}
+.mfld-row:active{background:rgba(0,201,167,0.08)}
+.mfld-key{color:var(--blue);font-family:var(--mono);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.mfld-val{font-family:var(--mono);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mfld-type{font-size:8px;font-weight:700;padding:2px 6px;border-radius:8px;white-space:nowrap;text-align:center}
+.mfld-copy{
+  font-size:10px;padding:2px 5px;border-radius:var(--radius3);
+  border:1px solid var(--border);background:transparent;color:var(--text4);
+  cursor:pointer;transition:all 0.15s;opacity:0
+}
+.mfld-row:hover .mfld-copy{opacity:1}
+.mfld-copy:hover{border-color:var(--teal);color:var(--teal)}
+.mfld-expand-row{padding:5px 13px 9px;border-bottom:1px solid var(--border)}
+.mfld-full{
+  font-size:9px;color:var(--text2);white-space:pre-wrap;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius3);
+  padding:8px 10px;font-family:var(--mono);max-height:160px;overflow-y:auto;line-height:1.6;
+  cursor:text;user-select:text
+}
+.expand-link{font-size:9px;color:var(--purple);cursor:pointer;margin-left:7px;text-decoration:underline;white-space:nowrap}
+
+/* ─── CSV EXPORT ─────────────────────────────────── */
+#pane-csv{overflow:hidden}
+#csv-hdr{background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+#csv-tabs{display:flex;padding:0 14px;border-bottom:1px solid var(--border)}
+.csv-tab{
+  font-size:11px;font-weight:500;padding:9px 16px;border:none;background:transparent;
+  color:var(--text3);cursor:pointer;font-family:var(--sans);border-bottom:2px solid transparent;transition:all 0.15s
+}
+.csv-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.csv-tab:hover:not(.active){color:var(--text2)}
+.csv-sub{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .csv-sub.active{display:flex}
-.csv-tb{display:flex;align-items:center;gap:7px;padding:9px 13px;flex-wrap:wrap;border-bottom:1px solid var(--border);flex-shrink:0}
+.csv-tb{
+  display:flex;align-items:center;gap:8px;padding:9px 14px;
+  flex-wrap:wrap;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)
+}
 .csv-tb-info{font-size:11px;color:var(--text3);flex:1}
-#csv-fields{overflow-y:auto;flex:1;padding:10px 13px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:5px;align-content:start}
-.fcheck{display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all 0.15s}
-.fcheck:hover,.fcheck.on{border-color:var(--teal);background:#0a1a14}
-.fcheck input{accent-color:var(--teal);width:13px;height:13px;cursor:pointer;flex-shrink:0}
+
+/* Field selector — scrollable */
+#csv-fields{
+  overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;
+  padding:12px 14px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:5px;align-content:start
+}
+.fcheck{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);
+  cursor:pointer;transition:all 0.15s
+}
+.fcheck:hover,.fcheck.on{border-color:var(--teal);background:rgba(0,201,167,0.04)}
+.fcheck input{accent-color:var(--teal);width:14px;height:14px;cursor:pointer;flex-shrink:0}
 .fcheck-lbl{font-size:10px;color:var(--text2);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-#csv-full-scroll{overflow:auto;flex:1}
+
+/* Full report — scrollable */
+#csv-full-scroll{overflow:auto;flex:1;min-height:0}
 table.ctbl{border-collapse:collapse;font-size:10px;width:max-content;min-width:100%;font-family:var(--mono)}
-table.ctbl th{background:var(--bg3);color:var(--blue);padding:6px 13px;text-align:left;font-weight:600;border-bottom:1px solid var(--border2);white-space:nowrap;position:sticky;top:0;z-index:1}
-table.ctbl td{color:var(--text2);padding:4px 13px;border-bottom:1px solid var(--border);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
-table.ctbl tr:hover td{background:var(--bg2)}
-.abtn{font-size:11px;font-weight:500;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:var(--sans);transition:all 0.15s;white-space:nowrap}
-.abtn:hover{border-color:var(--teal);color:var(--teal)}
-.abtn.p{background:var(--teal);border-color:var(--teal);color:#030e09;font-weight:700}
-.abtn.p:hover{background:var(--teal2)}
-.abtn.x{background:#1a1050;border-color:#5050c0;color:#a0a0f0}
-.abtn.x:hover{background:#252075}
-.empty-st{display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;gap:7px;color:var(--text3);font-size:11px}
-.empty-st .big{font-size:32px;opacity:0.2;margin-bottom:3px}
-.mtd-expand{font-size:9px;color:var(--purple);cursor:pointer;margin-left:6px;text-decoration:underline}
-.toast{position:fixed;bottom:18px;right:18px;background:#0a2a1e;border:1px solid var(--teal);color:var(--teal);font-size:11px;padding:7px 15px;border-radius:8px;z-index:9999;opacity:0;transition:opacity 0.2s;pointer-events:none;font-family:var(--sans);font-weight:600}
-.toast.show{opacity:1}
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+table.ctbl th{
+  background:var(--bg3);color:var(--blue);padding:7px 14px;text-align:left;
+  font-weight:600;border-bottom:1px solid var(--border2);white-space:nowrap;
+  position:sticky;top:0;z-index:1;cursor:pointer;user-select:none
+}
+table.ctbl th:hover{color:var(--teal)}
+table.ctbl td{
+  color:var(--text2);padding:5px 14px;border-bottom:1px solid var(--border);
+  white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;transition:background 0.1s
+}
+table.ctbl tr:hover td{background:rgba(110,168,255,0.04)}
+table.ctbl td:active,table.ctbl td.copy-flash{background:rgba(0,201,167,0.12)!important}
+
+/* Buttons */
+.abtn{
+  font-size:11px;font-weight:500;padding:6px 13px;border-radius:var(--radius2);
+  border:1px solid var(--border2);background:var(--bg3);color:var(--text2);
+  cursor:pointer;font-family:var(--sans);transition:all 0.15s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px
+}
+.abtn:hover{border-color:var(--teal);color:var(--teal);background:rgba(0,201,167,0.05)}
+.abtn.primary{background:linear-gradient(135deg,var(--teal),var(--teal2));border-color:var(--teal);color:#030e09;font-weight:700}
+.abtn.primary:hover{background:linear-gradient(135deg,var(--teal3),var(--teal));box-shadow:0 0 12px rgba(0,201,167,0.2)}
+.abtn.xml{background:linear-gradient(135deg,#1a1050,#1e1560);border-color:#5060c0;color:#b0b0f0}
+.abtn.xml:hover{background:linear-gradient(135deg,#252075,#2a1a80);box-shadow:0 0 10px rgba(80,80,192,0.2)}
+
+/* ─── EMPTY / TOAST ──────────────────────────────── */
+.empty-st{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:200px;gap:10px;color:var(--text3);font-size:12px;
+  flex-shrink:0
+}
+.empty-st .big{font-size:40px;opacity:0.15;margin-bottom:4px}
+.empty-st p{color:var(--text3);font-size:11px;text-align:center;line-height:1.6;max-width:200px}
+
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:linear-gradient(135deg,#0a2a1e,#0d3224);
+  border:1px solid var(--teal);color:var(--teal);
+  font-size:11px;padding:9px 16px;border-radius:var(--radius2);
+  z-index:9999;opacity:0;transform:translateY(8px);
+  transition:opacity 0.2s,transform 0.2s;pointer-events:none;
+  font-family:var(--sans);font-weight:600;box-shadow:0 4px 16px rgba(0,201,167,0.15)
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:linear-gradient(135deg,#2a0a0a,#320d0d);border-color:var(--red);color:var(--red);box-shadow:0 4px 16px rgba(248,113,113,0.15)}
+
+/* ─── SCROLLBARS ─────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border3)}
+
+/* ─── SELECTION ──────────────────────────────────── */
+::selection{background:rgba(0,201,167,0.2);color:var(--text)}
 </style>
 </head>
 <body>
 <div id="app">
-<div id="titlebar"><span style="font-size:16px">⬡</span><h1>JSON STUDIO PRO</h1><span class="ver">v3.0 MEDIA GRADE</span></div>
+
+<!-- TITLEBAR -->
+<div id="titlebar">
+  <span class="logo">⬡</span>
+  <h1>JSON STUDIO PRO</h1>
+  <span class="sub">Media Grade</span>
+  <span class="tbadge">v3.0</span>
+</div>
+
+<!-- TOOLBAR -->
 <div id="toolbar">
-  <button class="tab-btn" onclick="switchTab('tree')">🌲 Tree View</button>
-  <button class="tab-btn" onclick="switchTab('viz')">✦ Visualizer</button>
-  <button class="tab-btn" onclick="switchTab('meta')">◈ Metadata</button>
-  <button class="tab-btn active" onclick="switchTab('csv')">⊟ CSV Export <span class="tab-badge">Default</span></button>
+  <button class="tab-btn" onclick="switchTab('tree')"><span>🌲</span> Tree View</button>
+  <button class="tab-btn" onclick="switchTab('viz')"><span>✦</span> Visualizer</button>
+  <button class="tab-btn" onclick="switchTab('meta')"><span>◈</span> Metadata</button>
+  <button class="tab-btn active" onclick="switchTab('csv')"><span>⊟</span> CSV Export</button>
 </div>
+
+<!-- MAIN -->
 <div id="main">
-<div id="sidebar">
-  <div class="sb-sec">
-    <div class="sb-lbl">Import JSON</div>
-    <div id="drop-zone" ondragover="ev_over(event)" ondragleave="ev_leave()" ondrop="ev_drop(event)" onclick="openFile()">
-      <div class="dz-icon" id="dz-icon">📂</div>
-      <div id="dz-label">Drop .json file</div>
-      <div id="dz-sub">or click to browse</div>
-      <input type="file" id="file-input" accept=".json" onchange="on_file(event)">
-    </div>
-    <button class="browse-btn" onclick="openFile()">Browse File</button>
-  </div>
-  <div class="sb-sec" id="fi-area" style="display:none">
-    <div class="sb-lbl">Loaded File</div>
-    <div class="fi-card">
-      <div class="fi-name" id="fi-name">—</div>
-      <div class="fi-meta" id="fi-meta">—</div>
-      <div class="fi-grid" id="fi-grid"></div>
-    </div>
-    <button class="sb-btn" style="margin-top:7px;margin-bottom:0" onclick="resetAll()">↺ Reset / Clear</button>
-  </div>
-  <div class="sb-sec" style="flex:1;display:flex;flex-direction:column;gap:0;justify-content:flex-end">
-    <div class="sb-lbl">Actions</div>
-    <button class="sb-btn" onclick="copyJSON()">⊡ Copy Full JSON</button>
-    <button class="sb-btn" onclick="expandTreeAll()">⊞ Expand Tree</button>
-    <button class="sb-btn" onclick="collapseTreeAll()">⊟ Collapse Tree</button>
-    <button class="sb-btn" onclick="fitViz()">⊡ Fit Visualizer</button>
-  </div>
-</div>
-<div id="output-panel">
-  <div id="pane-tree" class="view-pane">
-    <div id="tree-topbar">
-      <input id="tree-search" placeholder="Find in tree..." oninput="treeFind(this.value)" onkeydown="treeNav(event)">
-      <span id="tree-match-info"></span>
-      <button class="tree-nav-btn" onclick="treeNavStep(-1)" title="Previous (↑)">↑</button>
-      <button class="tree-nav-btn" onclick="treeNavStep(1)" title="Next (↓)">↓</button>
-      <div class="sep2"></div>
-      <button class="sm-btn" onclick="expandTreeAll()">⊞ Expand</button>
-      <button class="sm-btn" onclick="collapseTreeAll()">⊟ Collapse</button>
-      <button class="sm-btn" onclick="copyJSON()">⊡ Copy</button>
-    </div>
-    <div id="tree-scroll"><div class="empty-st"><div class="big">🌲</div>Import a JSON file to explore</div></div>
-  </div>
-  <div id="pane-viz" class="view-pane">
-    <div id="viz-topbar">
-      <button class="vtb-btn" onclick="vzoom(0.2)">＋ Zoom In</button>
-      <div class="v-sep"></div>
-      <div id="viz-zoom-lbl">100%</div>
-      <div class="v-sep"></div>
-      <button class="vtb-btn" onclick="vzoom(-0.2)">－ Zoom Out</button>
-      <div class="v-sep"></div>
-      <button class="vtb-btn" onclick="fitViz()">⊡ Fit</button>
-      <div class="v-sep"></div>
-      <button class="vtb-btn" onclick="resetViz()">⊙ Reset</button>
-      <div class="v-sep"></div>
-      <div id="viz-find-wrap">
-        <input id="viz-find" placeholder="Find node..." oninput="vizFind(this.value)" onkeydown="vizFindNav(event)">
-        <span id="viz-find-count"></span>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+
+    <!-- Import section -->
+    <div class="sb-sec">
+      <div class="sb-lbl">Import JSON</div>
+      <div id="drop-zone"
+        ondragover="evOver(event)" ondragleave="evLeave()" ondrop="evDrop(event)"
+        onclick="openFileDialog()">
+        <span id="dz-icon">📂</span>
+        <div id="dz-label">Drop your .json file here</div>
+        <div id="dz-sub">Supports any valid JSON file<br>Click or drag &amp; drop</div>
+        <input type="file" id="file-input" accept=".json,application/json" onchange="onFileChange(event)">
       </div>
-      <div class="v-sep"></div>
-      <button class="vtb-btn" onclick="copyJSON()">⊡ Copy</button>
+      <button class="browse-btn" onclick="openFileDialog()">📁 Browse &amp; Open File</button>
     </div>
-    <div id="viz-wrap"><div id="viz-stage"><svg id="viz-svg"></svg></div></div>
-    <div id="viz-legend">
-      <div class="lg-t">Node Types</div>
-      <div class="lg-r"><div class="lg-d" style="background:#1a2050;border:1px solid #6ea8ff"></div>Object { }</div>
-      <div class="lg-r"><div class="lg-d" style="background:#1a1408;border:1px solid #fbbf24"></div>Array [ ]</div>
-      <div class="lg-r"><div class="lg-d" style="background:#0a1a0e;border:1px solid #4ade80"></div>Value</div>
-      <div class="lg-r" style="margin-top:4px;font-size:9px;color:var(--text3)">Scroll = Pan · Buttons = Zoom</div>
-    </div>
-  </div>
-  <div id="pane-meta" class="view-pane">
-    <div id="meta-topbar">
-      <input id="meta-find" placeholder="Search fields, values, keys..." oninput="metaFilter(this.value)">
-      <button class="meta-btn" onclick="metaExpandAll()">⊞ Expand All</button>
-      <button class="meta-btn" onclick="metaCollapseAll()">⊟ Collapse All</button>
-      <button class="meta-btn" onclick="copyJSON()">⊡ Copy All</button>
-    </div>
-    <div id="meta-scroll"><div class="empty-st"><div class="big">◈</div>Import a JSON file to view metadata</div></div>
-  </div>
-  <div id="pane-csv" class="view-pane">
-    <div id="csv-header">
-      <div id="csv-subtabs">
-        <button class="csv-stab active" onclick="csvTab('primary')">⊞ Primary Report</button>
-        <button class="csv-stab" onclick="csvTab('full')">⊟ Full Report</button>
+
+    <!-- File info -->
+    <div class="sb-sec" id="fi-area" style="display:none">
+      <div class="sb-lbl">Loaded File</div>
+      <div class="fi-card">
+        <div class="fi-name" id="fi-name">—</div>
+        <div class="fi-meta" id="fi-meta">—</div>
+        <div class="fi-grid" id="fi-grid"></div>
       </div>
     </div>
-    <div class="csv-sub active" id="csv-pane-primary">
-      <div class="csv-tb">
-        <span class="csv-tb-info" id="prim-info">Select fields to include in export</span>
-        <button class="abtn" onclick="selAll(true)">✓ Select All</button>
-        <button class="abtn" onclick="selAll(false)">✗ Clear</button>
-        <button class="abtn p" onclick="dlPrimCSV()">⬇ Download CSV</button>
-        <button class="abtn x" onclick="dlPrimXML()">⬇ Export XML</button>
+
+    <!-- Actions -->
+    <div class="sb-sec" style="flex:1;display:flex;flex-direction:column;justify-content:space-between">
+      <div>
+        <div class="sb-lbl">Actions</div>
+        <button class="sb-btn" onclick="copyJSON()"><span class="sb-icon">⊡</span> Copy Full JSON</button>
+        <button class="sb-btn" onclick="expandTreeAll()"><span class="sb-icon">⊞</span> Expand Tree</button>
+        <button class="sb-btn" onclick="collapseTreeAll()"><span class="sb-icon">⊟</span> Collapse Tree</button>
+        <button class="sb-btn" onclick="fitViz()"><span class="sb-icon">◉</span> Fit Visualizer</button>
       </div>
-      <div id="csv-fields"><div class="empty-st"><div class="big">⊞</div>Import a JSON file to select fields</div></div>
-    </div>
-    <div class="csv-sub" id="csv-pane-full">
-      <div class="csv-tb">
-        <span class="csv-tb-info" id="full-info">No data loaded</span>
-        <button class="abtn" onclick="copyCSV()">⊡ Copy CSV</button>
-        <button class="abtn p" onclick="dlFullCSV()">⬇ Download CSV</button>
-        <button class="abtn x" onclick="dlFullXML()">⬇ Export XML</button>
+      <div>
+        <button class="sb-btn sb-btn-danger" onclick="resetAll()"><span class="sb-icon">↺</span> Reset / Clear File</button>
       </div>
-      <div id="csv-full-scroll"><div class="empty-st"><div class="big">⊟</div>Import a JSON file to view full report</div></div>
     </div>
-  </div>
-</div>
-</div>
-</div>
+
+  </div><!-- /sidebar -->
+
+  <!-- OUTPUT -->
+  <div id="output-panel">
+
+    <!-- ── TREE ── -->
+    <div id="pane-tree" class="view-pane">
+      <div id="tree-topbar">
+        <div class="search-wrap">
+          <span class="s-icon">🔍</span>
+          <input class="search-input" id="tree-search" placeholder="Find in tree..." oninput="treeFind(this.value)" onkeydown="treeKeyNav(event)">
+        </div>
+        <span class="match-badge" id="tree-badge"></span>
+        <button class="nav-btn" onclick="treeStep(-1)" title="Prev (↑)">↑</button>
+        <button class="nav-btn" onclick="treeStep(1)" title="Next (↓)">↓</button>
+        <div class="divider"></div>
+        <button class="sm-btn" onclick="expandTreeAll()">⊞ Expand</button>
+        <button class="sm-btn" onclick="collapseTreeAll()">⊟ Collapse</button>
+        <button class="sm-btn" onclick="copyJSON()">⊡ Copy JSON</button>
+        <span style="font-size:9px;color:var(--text3);margin-left:4px">Dbl-click to copy value</span>
+      </div>
+      <div id="tree-scroll">
+        <div class="empty-st"><div class="big">🌲</div><p>Import a JSON file<br>to explore the tree</p></div>
+      </div>
+    </div>
+
+    <!-- ── VISUALIZER ── -->
+    <div id="pane-viz" class="view-pane">
+      <div id="viz-topbar">
+        <button class="vtb-btn" onclick="vzoom(0.2)">＋ Zoom In</button>
+        <div class="v-sep"></div>
+        <div id="viz-zoom-lbl">100%</div>
+        <div class="v-sep"></div>
+        <button class="vtb-btn" onclick="vzoom(-0.2)">－ Zoom Out</button>
+        <div class="v-sep"></div>
+        <button class="vtb-btn" onclick="fitViz()">⊡ Fit</button>
+        <div class="v-sep"></div>
+        <button class="vtb-btn" onclick="resetViz()">⊙ Reset</button>
+        <div class="v-sep"></div>
+        <div class="viz-search-wrap">
+          <span class="viz-s-icon">🔍</span>
+          <input id="viz-find" placeholder="Find node..." oninput="vizFind(this.value)" onkeydown="vizFindNav(event)">
+          <span id="viz-find-count"></span>
+        </div>
+        <div class="v-sep"></div>
+        <button class="vtb-btn" onclick="copyJSON()">⊡ Copy</button>
+      </div>
+      <div id="viz-wrap">
+        <div id="viz-stage"><svg id="viz-svg"></svg></div>
+      </div>
+      <div id="viz-legend">
+        <div class="lg-t">Node Types</div>
+        <div class="lg-r"><div class="lg-d" style="background:rgba(110,168,255,0.15);border:1px solid #6ea8ff"></div>Object { }</div>
+        <div class="lg-r"><div class="lg-d" style="background:rgba(251,191,36,0.1);border:1px solid #fbbf24"></div>Array [ ]</div>
+        <div class="lg-r"><div class="lg-d" style="background:rgba(74,222,128,0.1);border:1px solid #4ade80"></div>Value</div>
+        <div class="lg-r" style="margin-top:5px;font-size:9px;color:var(--text3)">Scroll = Pan &nbsp;·&nbsp; Buttons = Zoom</div>
+        <div class="lg-r" style="font-size:9px;color:var(--text3)">Dbl-click card to copy</div>
+      </div>
+    </div>
+
+    <!-- ── METADATA ── -->
+    <div id="pane-meta" class="view-pane">
+      <div id="meta-topbar">
+        <div class="search-wrap" style="flex:1;min-width:140px">
+          <span class="s-icon">🔍</span>
+          <input class="search-input" id="meta-find" style="width:100%" placeholder="Search fields, keys, values..." oninput="metaFilter(this.value)">
+        </div>
+        <button class="meta-btn" onclick="metaExpandAll()">⊞ Expand All</button>
+        <button class="meta-btn" onclick="metaCollapseAll()">⊟ Collapse All</button>
+        <button class="meta-btn" onclick="copyJSON()">⊡ Copy All</button>
+        <span style="font-size:9px;color:var(--text3)">Dbl-click row to copy</span>
+      </div>
+      <!-- SCROLLABLE CONTAINER -->
+      <div id="meta-scroll">
+        <div class="empty-st"><div class="big">◈</div><p>Import a JSON file<br>to view metadata</p></div>
+      </div>
+    </div>
+
+    <!-- ── CSV EXPORT ── -->
+    <div id="pane-csv" class="view-pane">
+      <div id="csv-hdr">
+        <div id="csv-tabs">
+          <button class="csv-tab active" onclick="csvSwitchTab('primary')">⊞ Primary Report</button>
+          <button class="csv-tab" onclick="csvSwitchTab('full')">⊟ Full Report</button>
+        </div>
+      </div>
+
+      <!-- Primary -->
+      <div class="csv-sub active" id="csv-pane-primary">
+        <div class="csv-tb">
+          <span class="csv-tb-info" id="prim-info">Select fields to include in export</span>
+          <button class="abtn" onclick="selAll(true)">✓ All</button>
+          <button class="abtn" onclick="selAll(false)">✗ Clear</button>
+          <button class="abtn primary" onclick="dlPrimCSV()">⬇ Download CSV</button>
+          <button class="abtn xml" onclick="dlPrimXML()">⬇ Export XML</button>
+        </div>
+        <div id="csv-fields">
+          <div class="empty-st"><div class="big">⊞</div><p>Import a JSON file<br>to select export fields</p></div>
+        </div>
+      </div>
+
+      <!-- Full Report -->
+      <div class="csv-sub" id="csv-pane-full">
+        <div class="csv-tb">
+          <span class="csv-tb-info" id="full-info">No data loaded</span>
+          <button class="abtn" onclick="copyCSV()">⊡ Copy CSV</button>
+          <button class="abtn primary" onclick="dlFullCSV()">⬇ Download CSV</button>
+          <button class="abtn xml" onclick="dlFullXML()">⬇ Export XML</button>
+          <span style="font-size:9px;color:var(--text3)">Dbl-click cell to copy</span>
+        </div>
+        <div id="csv-full-scroll">
+          <div class="empty-st"><div class="big">⊟</div><p>Import a JSON file<br>to view full report</p></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /output-panel -->
+
+</div><!-- /main -->
+</div><!-- /app -->
+
 <div class="toast" id="toast"></div>
+
 <script>
-let DATA=null,FNAME=null,csvRows=[],csvKeys=[],vizNodes=[],vizScale=1,vizOffX=20,vizOffY=20,vizW=0,vizH=0
-let treeMatches=[],treeMatchIdx=0,vizFindMatches=[],vizFindIdx=0
-let currentTab='csv'
+'use strict';
 
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900)}
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let DATA = null, FNAME = null;
+let csvRows = [], csvKeys = [];
+let vizNodes = [], vizScale = 1, vizOffX = 20, vizOffY = 20, vizW = 0, vizH = 0;
+let treeMatches = [], treeMatchIdx = 0;
+let vizMatches = [], vizMatchIdx = 0;
+let currentTab = 'csv';
 
-/* ── Global Ctrl+C ── */
-document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key==='c'){
-    const sel=window.getSelection();if(sel&&sel.toString().length>0)return
-    if(DATA){navigator.clipboard.writeText(JSON.stringify(DATA,null,2));toast('✓ JSON copied (Ctrl+C)')}
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+function toast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ═══════════════════════════════════════════
+   GLOBAL CTRL+C
+═══════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+    const sel = window.getSelection();
+    if (sel && sel.toString().length > 0) return; // allow normal copy
+    if (DATA) {
+      navigator.clipboard.writeText(JSON.stringify(DATA, null, 2));
+      toast('✓ JSON copied (Ctrl+C)');
+    }
   }
-})
+});
 
-/* ── File handling ── */
-async function openFile() {
-  if (window.electronAPI && window.electronAPI.openFile) {
+/* ═══════════════════════════════════════════
+   FILE HANDLING — CRITICAL FIXES
+═══════════════════════════════════════════ */
+function evOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
+function evLeave() { document.getElementById('drop-zone').classList.remove('drag-over'); }
+function evDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) loadFileObj(f);
+}
+function onFileChange(e) {
+  const f = e.target.files[0];
+  if (f) loadFileObj(f);
+  e.target.value = '';
+}
+
+// Open file — works in both Electron and browser
+async function openFileDialog() {
+  if (window.electronAPI && typeof window.electronAPI.openFile === 'function') {
     try {
-      const r = await window.electronAPI.openFile()
-      if (!r) return
-      if (r.error) { toast('⚠ ' + r.error); return }
-      FNAME = r.name
-      const parsed = JSON.parse(r.content)
-      DATA = parsed
-      setDZ('✅', r.name, (r.content.length / 1024).toFixed(1) + ' KB')
-      populateAll(DATA, { name: r.name, size: r.content.length })
-    } catch(e) {
-      toast('⚠ ' + e.message)
+      const result = await window.electronAPI.openFile();
+      if (!result) return;
+      if (result.error) { toast('⚠ ' + result.error, true); return; }
+      processRawJSON(result.content, result.name, result.size || result.content.length);
+    } catch (err) {
+      toast('⚠ ' + err.message, true);
     }
   } else {
-    document.getElementById('file-input').click()
+    document.getElementById('file-input').click();
   }
 }
-function ev_over(e){e.preventDefault();document.getElementById('drop-zone').classList.add('drag-over')}
-function ev_leave(){document.getElementById('drop-zone').classList.remove('drag-over')}
-function ev_drop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadF(f)}
-function on_file(e){const f=e.target.files[0];if(f)loadF(f);e.target.value=''}
-function loadF(file){
-  if(!file.name.endsWith('.json')&&file.type!=='application/json'){toast('⚠ Please upload a .json file');return}
-  FNAME=file.name
-  const r=new FileReader()
-  r.onload=e=>{try{DATA=JSON.parse(e.target.result);setDZ('✅',file.name,(file.size/1024).toFixed(1)+' KB');populateAll(DATA,file)}catch(err){toast('⚠ '+err.message)}}
-  r.readAsText(file)
+
+function loadFileObj(file) {
+  if (!file.name.endsWith('.json') && file.type !== 'application/json') {
+    toast('⚠ Please upload a .json file', true);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => processRawJSON(e.target.result, file.name, file.size);
+  reader.onerror = () => toast('⚠ Failed to read file', true);
+  reader.readAsText(file);
 }
-function setDZ(icon,lbl,sub){document.getElementById('dz-icon').textContent=icon;document.getElementById('dz-label').textContent=lbl;document.getElementById('dz-sub').textContent=sub;document.getElementById('drop-zone').style.borderColor=icon==='✅'?'var(--teal)':''}
-function resetAll(){DATA=null;FNAME=null;csvRows=[];csvKeys=[];vizNodes=[];setDZ('📂','Drop .json file','or click to browse');document.getElementById('fi-area').style.display='none';document.getElementById('tree-scroll').innerHTML='<div class="empty-st"><div class="big">🌲</div>Import a JSON file</div>';document.getElementById('meta-scroll').innerHTML='<div class="empty-st"><div class="big">◈</div>Import a JSON file</div>';document.getElementById('csv-fields').innerHTML='<div class="empty-st"><div class="big">⊞</div>Import a JSON file</div>';document.getElementById('csv-full-scroll').innerHTML='<div class="empty-st"><div class="big">⊟</div>Import a JSON file</div>';document.getElementById('viz-stage').querySelectorAll('.jcard').forEach(c=>c.remove());document.getElementById('viz-svg').innerHTML='';toast('Cleared')}
-function getStats(d){let k=0,a=0,s=0,n=0,b=0,nl=0,mx=0;function w(o,d){mx=Math.max(mx,d);if(Array.isArray(o)){a++;o.forEach(v=>w(v,d+1))}else if(o&&typeof o==='object'){const ks=Object.keys(o);k+=ks.length;ks.forEach(x=>w(o[x],d+1))}else if(typeof o==='string')s++;else if(typeof o==='number')n++;else if(typeof o==='boolean')b++;else if(o===null)nl++}w(d,0);return{keys:k,arrays:a,strings:s,numbers:n,bools:b,nulls:nl,maxD:mx}}
-function populateAll(data,file){
-  const st=getStats(data)
-  document.getElementById('fi-area').style.display='block'
-  document.getElementById('fi-name').textContent=file.name
-  document.getElementById('fi-meta').textContent=(file.size/1024).toFixed(1)+' KB'
-  document.getElementById('fi-grid').innerHTML=`<div class="fi-stat"><div class="fi-sv">${st.keys}</div><div class="fi-sk">Keys</div></div><div class="fi-stat"><div class="fi-sv">${st.maxD}</div><div class="fi-sk">Depth</div></div><div class="fi-stat"><div class="fi-sv">${st.arrays}</div><div class="fi-sk">Arrays</div></div><div class="fi-stat"><div class="fi-sv">${st.strings+st.numbers}</div><div class="fi-sk">Values</div></div>`
-  renderTree(data);renderMeta(data);buildCSV(data);renderPrimFields();renderFullReport()
-  if(currentTab==='viz')renderViz()
-  toast('✓ '+file.name+' loaded')
+
+function processRawJSON(content, name, size) {
+  try {
+    const parsed = JSON.parse(content);
+    DATA = parsed;
+    FNAME = name;
+    // Update drop zone UI
+    document.getElementById('dz-icon').textContent = '✅';
+    document.getElementById('dz-label').textContent = name;
+    document.getElementById('dz-sub').textContent = (size / 1024).toFixed(1) + ' KB loaded successfully';
+    document.getElementById('drop-zone').style.borderColor = 'var(--teal)';
+    document.getElementById('drop-zone').style.background = 'rgba(0,201,167,0.04)';
+    // Populate all sections
+    populateAll(DATA, name, size);
+  } catch (err) {
+    toast('⚠ Invalid JSON: ' + err.message, true);
+  }
 }
-/* Tabs */
-function switchTab(t){currentTab=t;document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['tree','viz','meta','csv'][i]===t));document.querySelectorAll('.view-pane').forEach(p=>p.classList.remove('active'));document.getElementById('pane-'+t).classList.add('active');if(t==='viz'&&DATA)renderViz()}
-function csvTab(t){document.querySelectorAll('.csv-stab').forEach((b,i)=>b.classList.toggle('active',['primary','full'][i]===t));document.querySelectorAll('.csv-sub').forEach(p=>p.classList.remove('active'));document.getElementById('csv-pane-'+t).classList.add('active')}
-/* Tree */
-let nid=0
-function rv(v){if(v===null)return`<span class="tv-null">null</span>`;if(typeof v==='string')return`<span class="tv-str">"${v.length>60?v.slice(0,60)+'…':v}"</span>`;if(typeof v==='boolean')return`<span class="tv-bool">${v}</span>`;if(typeof v==='number')return`<span class="tv-num">${v}</span>`;return''}
-function bnode(key,val,d){const id='nd'+(nid++),isO=val&&typeof val==='object',isA=Array.isArray(val);const ks=key!==null?`<span class="tk">"${key}"</span>: `:'';if(!isO)return`<div class="tree-node"><span class="tree-key" data-val="${String(val)}" data-key="${key??''}"><span class="tree-toggle">&nbsp;</span>${ks}${rv(val)}</span></div>`;const lbl=isA?`[${val.length}]`:`{${Object.keys(val).length}}`,bdg=isA?'array':'object';const kids=isA?val.map((v,i)=>bnode(i,v,d+1)).join(''):Object.entries(val).map(([k,v])=>bnode(k,v,d+1)).join('');return`<div class="tree-node"><span class="tree-key" data-key="${key??''}" onclick="ttog('${id}')"><span class="tree-toggle" id="tg${id}">▾</span>${ks}<span style="color:var(--text3)">${isA?'[':'{'}${lbl}${isA?']':'}'}</span><span class="tree-badge">${bdg}</span></span><div id="${id}">${kids}</div></div>`}
-function ttog(id){const el=document.getElementById(id),t=document.getElementById('tg'+id),h=el.style.display==='none';el.style.display=h?'':'none';if(t)t.textContent=h?'▾':'▸'}
-function renderTree(data){nid=0;document.getElementById('tree-scroll').innerHTML=`<div style="font-family:var(--mono)">${bnode(null,data,0)}</div>`}
-function collapseTreeAll(){document.querySelectorAll('[id^="nd"]').forEach(e=>e.style.display='none');document.querySelectorAll('[id^="tgnd"]').forEach(e=>e.textContent='▸')}
-function expandTreeAll(){document.querySelectorAll('[id^="nd"]').forEach(e=>e.style.display='');document.querySelectorAll('[id^="tgnd"]').forEach(e=>e.textContent='▾')}
-function copyJSON(){if(!DATA)return;navigator.clipboard.writeText(JSON.stringify(DATA,null,2));toast('✓ JSON copied!')}
-function treeFind(q){document.querySelectorAll('.tree-key').forEach(el=>el.classList.remove('tree-match','tree-match-active'));treeMatches=[];treeMatchIdx=0;if(!q.trim()){document.getElementById('tree-match-info').textContent='';return};const lq=q.toLowerCase();document.querySelectorAll('.tree-key').forEach(el=>{if(el.textContent.toLowerCase().includes(lq)){el.classList.add('tree-match');treeMatches.push(el)}});if(treeMatches.length){treeMatches[0].classList.add('tree-match-active');treeMatches[0].scrollIntoView({block:'center'})};document.getElementById('tree-match-info').textContent=treeMatches.length?`${treeMatchIdx+1}/${treeMatches.length}`:'No match'}
-function treeNavStep(dir){if(!treeMatches.length)return;treeMatches[treeMatchIdx].classList.remove('tree-match-active');treeMatchIdx=(treeMatchIdx+dir+treeMatches.length)%treeMatches.length;const el=treeMatches[treeMatchIdx];el.classList.add('tree-match-active');el.scrollIntoView({block:'center'});document.getElementById('tree-match-info').textContent=`${treeMatchIdx+1}/${treeMatches.length}`}
-function treeNav(e){if(e.key==='Enter'||e.key==='ArrowDown'){e.preventDefault();treeNavStep(1)}if(e.key==='ArrowUp'){e.preventDefault();treeNavStep(-1)}}
-/* Metadata */
-function tlabel(v){if(v===null)return'null';if(Array.isArray(v))return'array';return typeof v}
-function tpill(v){if(v===null)return'pill-null';if(Array.isArray(v))return'pill-arr';if(typeof v==='string')return'pill-str';if(typeof v==='number')return'pill-num';if(typeof v==='boolean')return'pill-bool';return'pill-obj'}
-function valColor(v){if(v===null)return'var(--text3)';if(typeof v==='string')return'var(--green)';if(typeof v==='number')return'var(--amber)';if(typeof v==='boolean')return'var(--red)';return'var(--blue)'}
-function shortV(v,max=45){if(v===null)return'null';if(typeof v==='string')return`"${v.length>max?v.slice(0,max)+'…':v}"`;if(typeof v==='boolean'||typeof v==='number')return String(v);if(Array.isArray(v))return`[ ${v.length} items ]`;if(typeof v==='object')return`{ ${Object.keys(v).length} keys }`;return''}
-function deepRows(obj,prefix,rows,depth=0){if(obj===null||typeof obj!=='object'){rows.push({key:prefix,val:obj,depth});return}if(Array.isArray(obj)){rows.push({key:prefix,val:obj,depth,isComplex:true});if(obj.length>0&&typeof obj[0]==='object')obj.slice(0,10).forEach((v,i)=>deepRows(v,`${prefix}[${i}]`,rows,depth+1));else if(obj.length>0)rows.push({key:`${prefix}[ ]`,val:obj.join(', '),depth:depth+1,isSummary:true});return}rows.push({key:prefix,val:obj,depth,isComplex:true});Object.entries(obj).forEach(([k,v])=>deepRows(v,prefix?`${prefix}.${k}`:k,rows,depth+1))}
-function renderMeta(data){
-  if(!data||typeof data!=='object')return
-  const st=getStats(data),keys=Object.keys(data)
-  let html=`<div class="meta-stats"><div class="mst-card"><div class="mst-v">${st.keys}</div><div class="mst-k">Total Keys</div></div><div class="mst-card"><div class="mst-v">${keys.length}</div><div class="mst-k">Root Keys</div></div><div class="mst-card"><div class="mst-v">${st.maxD}</div><div class="mst-k">Depth</div></div><div class="mst-card"><div class="mst-v">${st.arrays}</div><div class="mst-k">Arrays</div></div><div class="mst-card"><div class="mst-v">${st.strings}</div><div class="mst-k">Strings</div></div><div class="mst-card"><div class="mst-v">${st.numbers}</div><div class="mst-k">Numbers</div></div><div class="mst-card"><div class="mst-v">${st.bools}</div><div class="mst-k">Booleans</div></div><div class="mst-card"><div class="mst-v">${st.nulls}</div><div class="mst-k">Nulls</div></div></div>`
-  keys.forEach((k,si)=>{
-    const v=data[k],rows=[];deepRows(v,k,rows)
-    const tl=tlabel(v),pc=tpill(v),bid=`mb-${si}`,aid=`ma-${si}`
-    const emoji=Array.isArray(v)?'📋':typeof v==='object'&&v?'📁':typeof v==='number'?'🔢':typeof v==='boolean'?'☑️':'📝'
-    html+=`<div class="msec-wrap" data-si="${si}"><div class="msec-hd" onclick="mToggle('${bid}','${aid}')"><span class="msec-emoji">${emoji}</span><span class="msec-title" title="${k}">${k}</span><div class="msec-pills"><span class="mpill ${pc}">${tl}</span><span class="mpill" style="background:var(--bg4);color:var(--text3)">${rows.length} field${rows.length!==1?'s':''}</span></div><button class="msec-cp" onclick="event.stopPropagation();copyMKey('${k}')">⊡ Copy</button><span class="msec-arrow open" id="${aid}">▶</span></div><div class="msec-bd open" id="${bid}"><div class="mtbl-header"><div class="mtbl-th">Field Path</div><div class="mtbl-th">Value</div><div class="mtbl-th">Type</div><div class="mtbl-th"></div></div>`
-    rows.forEach((row,ri)=>{
-      const fid=`mf-${si}-${ri}`,isC=row.isComplex&&typeof row.val==='object'&&row.val!==null
-      const sv=row.isSummary?`<span style="color:var(--text3);font-size:9px">${row.val}</span>`:`<span style="color:${valColor(row.val)}">${shortV(row.val)}</span>`
-      const indent=row.depth>0?`style="padding-left:${row.depth*10+12}px"`:'style="padding-left:12px"'
-      const safeStr=JSON.stringify(String(row.val)).slice(1,-1)
-      html+=`<div class="mfield-row"><div class="mfield-key" title="${row.key}" ${indent}>${row.key}</div><div class="mfield-val">${sv}${isC?`<span class="mtd-expand" onclick="toggleMF('${fid}',this)">expand ▾</span>`:''}</div><div><span class="mfield-type ${tpill(row.val)}">${tlabel(row.val)}</span></div><button class="mfield-copy" onclick="navigator.clipboard.writeText('${safeStr}');toast('✓ Copied')">⊡</button></div>${isC?`<div id="${fid}" style="display:none" class="mfield-expand-row"><div class="mfield-full">${JSON.stringify(row.val,null,2)}</div></div>`:''}`
-    })
-    html+=`</div></div>`
-  })
-  document.getElementById('meta-scroll').innerHTML=html
+
+function resetAll() {
+  DATA = null; FNAME = null; csvRows = []; csvKeys = []; vizNodes = [];
+  document.getElementById('dz-icon').textContent = '📂';
+  document.getElementById('dz-label').textContent = 'Drop your .json file here';
+  document.getElementById('dz-sub').textContent = 'Supports any valid JSON file\nClick or drag & drop';
+  document.getElementById('drop-zone').style.borderColor = '';
+  document.getElementById('drop-zone').style.background = '';
+  document.getElementById('fi-area').style.display = 'none';
+  document.getElementById('tree-scroll').innerHTML = '<div class="empty-st"><div class="big">🌲</div><p>Import a JSON file<br>to explore the tree</p></div>';
+  document.getElementById('meta-scroll').innerHTML = '<div class="empty-st"><div class="big">◈</div><p>Import a JSON file<br>to view metadata</p></div>';
+  document.getElementById('csv-fields').innerHTML = '<div class="empty-st"><div class="big">⊞</div><p>Import a JSON file<br>to select export fields</p></div>';
+  document.getElementById('csv-full-scroll').innerHTML = '<div class="empty-st"><div class="big">⊟</div><p>Import a JSON file<br>to view full report</p></div>';
+  const stage = document.getElementById('viz-stage');
+  stage.querySelectorAll('.jcard').forEach(c => c.remove());
+  document.getElementById('viz-svg').innerHTML = '';
+  toast('File cleared');
 }
-function mToggle(bid,aid){const b=document.getElementById(bid),a=document.getElementById(aid),o=b.classList.contains('open');b.classList.toggle('open',!o);a.classList.toggle('open',!o)}
-function toggleMF(id,el){const d=document.getElementById(id),s=d.style.display==='block';d.style.display=s?'none':'block';el.textContent=s?'expand ▾':'collapse ▴'}
-function metaExpandAll(){document.querySelectorAll('.msec-bd').forEach(b=>b.classList.add('open'));document.querySelectorAll('.msec-arrow').forEach(a=>a.classList.add('open'))}
-function metaCollapseAll(){document.querySelectorAll('.msec-bd').forEach(b=>b.classList.remove('open'));document.querySelectorAll('.msec-arrow').forEach(a=>a.classList.remove('open'))}
-function copyMKey(k){if(!DATA)return;navigator.clipboard.writeText(JSON.stringify(DATA[k],null,2));toast(`✓ "${k}" copied`)}
-function metaFilter(q){const lq=q.toLowerCase();document.querySelectorAll('.msec-wrap').forEach(s=>{const rows=s.querySelectorAll('.mfield-row,.mfield-expand-row');let any=false;rows.forEach(r=>{const show=!q||r.textContent.toLowerCase().includes(lq);r.style.display=show?'':'none';if(show)any=true});s.style.display=any||!q?'':'none';if(any&&q){const b=s.querySelector('.msec-bd');if(b)b.classList.add('open');const a=s.querySelector('.msec-arrow');if(a)a.classList.add('open')}})}
-/* CSV */
-function deepFlatten(obj,p,res){if(obj===null||obj===undefined){res[p]='';return}if(typeof obj!=='object'){res[p]=obj;return}if(Array.isArray(obj)){if(!obj.length){res[p]='[]';return}if(typeof obj[0]!=='object'){res[p]=obj.join('; ');return}obj.forEach((x,i)=>deepFlatten(x,p?`${p}[${i}]`:`[${i}]`,res));return}Object.entries(obj).forEach(([k,v])=>deepFlatten(v,p?`${p}.${k}`:k,res))}
-function buildCSV(data){let rows=Array.isArray(data)?data:null;if(!rows){const ak=Object.keys(data).find(k=>Array.isArray(data[k])&&data[k].length>0&&typeof data[k][0]==='object');rows=ak?data[ak]:null}if(!rows)rows=[data];csvRows=rows.map(r=>{const res={};deepFlatten(r,'',res);return res});csvKeys=[...new Set(csvRows.flatMap(r=>Object.keys(r)))].filter(k=>k!=='')}
-function renderPrimFields(){if(!csvKeys.length)return;const tFor=k=>{const v=csvRows[0]?.[k];if(v!==undefined&&v!==''&&!isNaN(Number(v)))return{t:'num',c:'pill-num'};if(v==='true'||v==='false')return{t:'bool',c:'pill-bool'};return{t:'str',c:'pill-str'}};document.getElementById('csv-fields').innerHTML=csvKeys.map(k=>{const{t,c}=tFor(k);return`<label class="fcheck on"><input type="checkbox" checked value="${k}" onchange="updPrimInfo()"><span class="fcheck-lbl" title="${k}">${k}</span><span class="mpill ${c}">${t}</span></label>`}).join('');updPrimInfo()}
-function updPrimInfo(){const sel=getSel();document.getElementById('prim-info').textContent=`${sel.length} of ${csvKeys.length} fields selected · ${csvRows.length} row(s)`;document.querySelectorAll('.fcheck').forEach(fc=>fc.classList.toggle('on',fc.querySelector('input').checked))}
-function selAll(v){document.querySelectorAll('#csv-fields input[type=checkbox]').forEach(cb=>cb.checked=v);updPrimInfo()}
-function getSel(){return[...document.querySelectorAll('#csv-fields input[type=checkbox]:checked')].map(cb=>cb.value)}
-function renderFullReport(){if(!csvKeys.length)return;document.getElementById('full-info').textContent=`${csvRows.length} row(s) · ${csvKeys.length} column(s)`;let html=`<table class="ctbl"><thead><tr>${csvKeys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>`;csvRows.forEach(row=>{html+=`<tr>${csvKeys.map(k=>`<td title="${String(row[k]??'')}">${row[k]??''}</td>`).join('')}</tr>`});document.getElementById('csv-full-scroll').innerHTML=html+'</tbody></table>'}
-function makeCSV(keys,rows){return[keys.join(','),...rows.map(r=>keys.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))].join('\r\n')}
-function makeXML(keys,rows){let x=`<?xml version="1.0" encoding="UTF-8"?>\n<report>\n`;rows.forEach(row=>{x+=`  <record>\n`;keys.forEach(k=>{const tag=k.replace(/[^a-zA-Z0-9_]/g,'_')||'field';x+=`    <${tag}>${String(row[k]??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</${tag}>\n`});x+=`  </record>\n`});return x+'</report>'}
+
+/* ═══════════════════════════════════════════
+   POPULATE ALL — called after file loads
+═══════════════════════════════════════════ */
+function populateAll(data, name, size) {
+  const st = getStats(data);
+  // File info panel
+  document.getElementById('fi-area').style.display = 'block';
+  document.getElementById('fi-name').textContent = name;
+  document.getElementById('fi-meta').textContent = (size / 1024).toFixed(1) + ' KB · JSON';
+  document.getElementById('fi-grid').innerHTML = `
+    <div class="fi-stat"><div class="fi-sv">${st.keys}</div><div class="fi-sk">Keys</div></div>
+    <div class="fi-stat"><div class="fi-sv">${st.maxD}</div><div class="fi-sk">Depth</div></div>
+    <div class="fi-stat"><div class="fi-sv">${st.arrays}</div><div class="fi-sk">Arrays</div></div>
+    <div class="fi-stat"><div class="fi-sv">${st.strings + st.numbers}</div><div class="fi-sk">Values</div></div>`;
+  // Render all sections
+  renderTree(data);
+  renderMeta(data);
+  buildCSVData(data);
+  renderPrimFields();
+  renderFullTable();
+  if (currentTab === 'viz') renderViz();
+  toast('✓ ' + name + ' loaded — ' + st.keys + ' keys');
+}
+
+/* ═══════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════ */
+function getStats(d) {
+  let keys = 0, arrays = 0, strings = 0, numbers = 0, bools = 0, nulls = 0, maxD = 0;
+  function w(o, d) {
+    maxD = Math.max(maxD, d);
+    if (Array.isArray(o)) { arrays++; o.forEach(v => w(v, d + 1)); }
+    else if (o && typeof o === 'object') { const ks = Object.keys(o); keys += ks.length; ks.forEach(k => w(o[k], d + 1)); }
+    else if (typeof o === 'string') strings++;
+    else if (typeof o === 'number') numbers++;
+    else if (typeof o === 'boolean') bools++;
+    else if (o === null) nulls++;
+  }
+  w(d, 0);
+  return { keys, arrays, strings, numbers, bools, nulls, maxD };
+}
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+function switchTab(t) {
+  currentTab = t;
+  document.querySelectorAll('.tab-btn').forEach((b, i) =>
+    b.classList.toggle('active', ['tree', 'viz', 'meta', 'csv'][i] === t));
+  document.querySelectorAll('.view-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + t).classList.add('active');
+  if (t === 'viz' && DATA) renderViz();
+}
+function csvSwitchTab(t) {
+  document.querySelectorAll('.csv-tab').forEach((b, i) => b.classList.toggle('active', ['primary', 'full'][i] === t));
+  document.querySelectorAll('.csv-sub').forEach(p => p.classList.remove('active'));
+  document.getElementById('csv-pane-' + t).classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   TREE VIEW
+═══════════════════════════════════════════ */
+let _nid = 0;
+function renderValue(v) {
+  if (v === null) return `<span class="tv-null">null</span>`;
+  if (typeof v === 'string') return `<span class="tv-str">"${v.length > 60 ? v.slice(0, 60) + '…' : v}"</span>`;
+  if (typeof v === 'boolean') return `<span class="tv-bool">${v}</span>`;
+  if (typeof v === 'number') return `<span class="tv-num">${v}</span>`;
+  return '';
+}
+function buildTreeNode(key, val, depth) {
+  const id = 'nd' + (_nid++);
+  const isO = val && typeof val === 'object';
+  const isA = Array.isArray(val);
+  const keySpan = key !== null ? `<span class="tk">"${key}"</span>: ` : '';
+  const rawKey = String(key ?? '');
+  const rawVal = !isO ? String(val ?? '') : '';
+
+  if (!isO) {
+    return `<div class="tree-node">
+      <div class="tree-row" data-key="${rawKey}" data-val="${rawVal.replace(/"/g, '&quot;')}"
+        ondblclick="dblCopyTreeNode(this)">
+        <span class="tree-key">
+          <span class="tree-toggle">&nbsp;</span>
+          ${keySpan}${renderValue(val)}
+        </span>
+      </div>
+    </div>`;
+  }
+  const lbl = isA ? `[${val.length}]` : `{${Object.keys(val).length}}`;
+  const badge = isA ? 'array' : 'object';
+  const kids = isA
+    ? val.map((v, i) => buildTreeNode(i, v, depth + 1)).join('')
+    : Object.entries(val).map(([k, v]) => buildTreeNode(k, v, depth + 1)).join('');
+  return `<div class="tree-node">
+    <div class="tree-row" data-key="${rawKey}" ondblclick="dblCopyTreeNode(this)">
+      <span class="tree-key" onclick="tToggle('${id}')">
+        <span class="tree-toggle" id="tg${id}">▾</span>
+        ${keySpan}<span style="color:var(--text3)">${isA ? '[' : '{'}${lbl}${isA ? ']' : '}'}</span>
+        <span class="tree-badge">${badge}</span>
+      </span>
+    </div>
+    <div id="${id}">${kids}</div>
+  </div>`;
+}
+function tToggle(id) {
+  const el = document.getElementById(id), t = document.getElementById('tg' + id);
+  const h = el.style.display === 'none';
+  el.style.display = h ? '' : 'none';
+  if (t) t.textContent = h ? '▾' : '▸';
+}
+function renderTree(data) {
+  _nid = 0;
+  document.getElementById('tree-scroll').innerHTML =
+    `<div style="font-family:var(--mono)">${buildTreeNode(null, data, 0)}</div>`;
+}
+function collapseTreeAll() {
+  document.querySelectorAll('[id^="nd"]').forEach(e => e.style.display = 'none');
+  document.querySelectorAll('[id^="tgnd"]').forEach(e => e.textContent = '▸');
+}
+function expandTreeAll() {
+  document.querySelectorAll('[id^="nd"]').forEach(e => e.style.display = '');
+  document.querySelectorAll('[id^="tgnd"]').forEach(e => e.textContent = '▾');
+}
+function copyJSON() {
+  if (!DATA) { toast('No file loaded', true); return; }
+  navigator.clipboard.writeText(JSON.stringify(DATA, null, 2));
+  toast('✓ Full JSON copied!');
+}
+function dblCopyTreeNode(el) {
+  const key = el.dataset.key, val = el.dataset.val;
+  const text = val !== undefined && val !== '' ? val : (key || '');
+  navigator.clipboard.writeText(text);
+  el.classList.add('copy-flash');
+  setTimeout(() => el.classList.remove('copy-flash'), 500);
+  toast(`✓ "${key || 'value'}" copied`);
+}
+
+/* Tree search */
+function treeFind(q) {
+  document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('tree-match', 'tree-match-active'));
+  treeMatches = []; treeMatchIdx = 0;
+  const badge = document.getElementById('tree-badge');
+  if (!q.trim()) { badge.textContent = ''; return; }
+  const lq = q.toLowerCase();
+  document.querySelectorAll('.tree-row').forEach(r => {
+    if (r.textContent.toLowerCase().includes(lq)) {
+      r.classList.add('tree-match');
+      treeMatches.push(r);
+    }
+  });
+  if (treeMatches.length) {
+    treeMatches[0].classList.add('tree-match-active');
+    treeMatches[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+  badge.textContent = treeMatches.length ? `${treeMatchIdx + 1}/${treeMatches.length}` : '0';
+}
+function treeStep(dir) {
+  if (!treeMatches.length) return;
+  treeMatches[treeMatchIdx].classList.remove('tree-match-active');
+  treeMatchIdx = (treeMatchIdx + dir + treeMatches.length) % treeMatches.length;
+  const el = treeMatches[treeMatchIdx];
+  el.classList.add('tree-match-active');
+  el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  document.getElementById('tree-badge').textContent = `${treeMatchIdx + 1}/${treeMatches.length}`;
+}
+function treeKeyNav(e) {
+  if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); treeStep(1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); treeStep(-1); }
+}
+
+/* ═══════════════════════════════════════════
+   METADATA
+═══════════════════════════════════════════ */
+function typeLabel(v) {
+  if (v === null) return 'null';
+  if (Array.isArray(v)) return 'array';
+  return typeof v;
+}
+function typePill(v) {
+  if (v === null) return 'pill-null';
+  if (Array.isArray(v)) return 'pill-arr';
+  if (typeof v === 'string') return 'pill-str';
+  if (typeof v === 'number') return 'pill-num';
+  if (typeof v === 'boolean') return 'pill-bool';
+  return 'pill-obj';
+}
+function valColor(v) {
+  if (v === null) return 'var(--text3)';
+  if (typeof v === 'string') return 'var(--green)';
+  if (typeof v === 'number') return 'var(--amber)';
+  if (typeof v === 'boolean') return 'var(--red)';
+  return 'var(--blue)';
+}
+function shortVal(v, max = 45) {
+  if (v === null) return 'null';
+  if (typeof v === 'string') return `"${v.length > max ? v.slice(0, max) + '…' : v}"`;
+  if (typeof v === 'boolean' || typeof v === 'number') return String(v);
+  if (Array.isArray(v)) return `[ ${v.length} item${v.length !== 1 ? 's' : ''} ]`;
+  if (typeof v === 'object') return `{ ${Object.keys(v).length} key${Object.keys(v).length !== 1 ? 's' : ''} }`;
+  return '';
+}
+function collectRows(obj, prefix, rows, depth = 0) {
+  if (obj === null || typeof obj !== 'object') { rows.push({ key: prefix, val: obj, depth }); return; }
+  if (Array.isArray(obj)) {
+    rows.push({ key: prefix, val: obj, depth, isComplex: true });
+    if (obj.length > 0 && typeof obj[0] === 'object')
+      obj.slice(0, 12).forEach((v, i) => collectRows(v, `${prefix}[${i}]`, rows, depth + 1));
+    else if (obj.length > 0)
+      rows.push({ key: `${prefix}[ ]`, val: obj.join(', '), depth: depth + 1, isSummary: true });
+    return;
+  }
+  rows.push({ key: prefix, val: obj, depth, isComplex: true });
+  Object.entries(obj).forEach(([k, v]) => collectRows(v, prefix ? `${prefix}.${k}` : k, rows, depth + 1));
+}
+
+function renderMeta(data) {
+  if (!data || typeof data !== 'object') return;
+  const st = getStats(data), rootKeys = Object.keys(data);
+
+  let html = `<div class="meta-stats">
+    <div class="mst" title="Double-click to copy" ondblclick="navigator.clipboard.writeText('${st.keys}');toast('✓ Copied')"><div class="mst-v">${st.keys}</div><div class="mst-k">Total Keys</div></div>
+    <div class="mst"><div class="mst-v">${rootKeys.length}</div><div class="mst-k">Root Keys</div></div>
+    <div class="mst"><div class="mst-v">${st.maxD}</div><div class="mst-k">Depth</div></div>
+    <div class="mst"><div class="mst-v">${st.arrays}</div><div class="mst-k">Arrays</div></div>
+    <div class="mst"><div class="mst-v">${st.strings}</div><div class="mst-k">Strings</div></div>
+    <div class="mst"><div class="mst-v">${st.numbers}</div><div class="mst-k">Numbers</div></div>
+    <div class="mst"><div class="mst-v">${st.bools}</div><div class="mst-k">Booleans</div></div>
+    <div class="mst"><div class="mst-v">${st.nulls}</div><div class="mst-k">Nulls</div></div>
+  </div>`;
+
+  rootKeys.forEach((k, si) => {
+    const v = data[k];
+    const rows = [];
+    collectRows(v, k, rows);
+    const tl = typeLabel(v), pc = typePill(v);
+    const bid = `mb${si}`, aid = `ma${si}`;
+    const emoji = Array.isArray(v) ? '📋' : (typeof v === 'object' && v) ? '📁' : typeof v === 'number' ? '🔢' : typeof v === 'boolean' ? '☑️' : '📝';
+
+    html += `<div class="msec" data-si="${si}">
+      <div class="msec-hd" onclick="mToggle('${bid}','${aid}')">
+        <span class="msec-emoji">${emoji}</span>
+        <span class="msec-title" title="${k}">${k}</span>
+        <div class="msec-pills">
+          <span class="mpill ${pc}">${tl}</span>
+          <span class="mpill pill-null">${rows.length} field${rows.length !== 1 ? 's' : ''}</span>
+        </div>
+        <button class="msec-copy-btn" onclick="event.stopPropagation();copyMetaKey('${k}')">⊡ Copy</button>
+        <span class="msec-arrow open" id="${aid}">▶</span>
+      </div>
+      <div class="msec-body open" id="${bid}">
+        <div class="mfld-hdr">
+          <div class="mfld-th">Field Path</div>
+          <div class="mfld-th">Value</div>
+          <div class="mfld-th">Type</div>
+          <div class="mfld-th"></div>
+        </div>`;
+
+    rows.forEach((row, ri) => {
+      const fid = `mf${si}_${ri}`;
+      const isC = row.isComplex && typeof row.val === 'object' && row.val !== null;
+      const vc = valColor(row.val);
+      const sv = row.isSummary
+        ? `<span style="color:var(--text3);font-size:9px">${row.val}</span>`
+        : `<span style="color:${vc}">${shortVal(row.val)}</span>`;
+      const indent = row.depth > 0 ? `padding-left:${row.depth * 12 + 13}px` : 'padding-left:13px';
+      const safeValStr = JSON.stringify(JSON.stringify(row.val));
+      html += `<div class="mfld-row" style="${indent.replace('padding-left', 'grid-column:1/-1;padding-left').split(';')[0]}"
+        ondblclick="dblCopyMeta(${safeValStr}, this)">
+        <div class="mfld-key" title="${row.key}" style="${indent}">${row.key}</div>
+        <div class="mfld-val">${sv}${isC ? `<span class="expand-link" onclick="event.stopPropagation();toggleMFull('${fid}',this)">expand ▾</span>` : ''}</div>
+        <div><span class="mfld-type ${typePill(row.val)}">${typeLabel(row.val)}</span></div>
+        <button class="mfld-copy" onclick="event.stopPropagation();navigator.clipboard.writeText(${safeValStr});toast('✓ Copied')">⊡</button>
+      </div>${isC ? `<div id="${fid}" style="display:none" class="mfld-expand-row"><div class="mfld-full">${JSON.stringify(row.val, null, 2)}</div></div>` : ''}`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  document.getElementById('meta-scroll').innerHTML = html;
+}
+
+function mToggle(bid, aid) {
+  const b = document.getElementById(bid), a = document.getElementById(aid);
+  const open = b.classList.contains('open');
+  b.classList.toggle('open', !open);
+  a.classList.toggle('open', !open);
+}
+function toggleMFull(id, el) {
+  const d = document.getElementById(id), s = d.style.display === 'block';
+  d.style.display = s ? 'none' : 'block';
+  el.textContent = s ? 'expand ▾' : 'collapse ▴';
+}
+function metaExpandAll() {
+  document.querySelectorAll('.msec-body').forEach(b => b.classList.add('open'));
+  document.querySelectorAll('.msec-arrow').forEach(a => a.classList.add('open'));
+}
+function metaCollapseAll() {
+  document.querySelectorAll('.msec-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.msec-arrow').forEach(a => a.classList.remove('open'));
+}
+function copyMetaKey(k) {
+  if (!DATA) return;
+  navigator.clipboard.writeText(JSON.stringify(DATA[k], null, 2));
+  toast(`✓ "${k}" copied`);
+}
+function dblCopyMeta(val, el) {
+  navigator.clipboard.writeText(val);
+  el.style.background = 'rgba(0,201,167,0.1)';
+  setTimeout(() => el.style.background = '', 500);
+  toast('✓ Value copied');
+}
+function metaFilter(q) {
+  const lq = q.toLowerCase();
+  document.querySelectorAll('.msec').forEach(sec => {
+    const rows = sec.querySelectorAll('.mfld-row, .mfld-expand-row');
+    let any = false;
+    rows.forEach(r => {
+      const show = !q || r.textContent.toLowerCase().includes(lq);
+      r.style.display = show ? '' : 'none';
+      if (show) any = true;
+    });
+    sec.style.display = (any || !q) ? '' : 'none';
+    if (any && q) {
+      const b = sec.querySelector('.msec-body');
+      if (b) b.classList.add('open');
+      const a = sec.querySelector('.msec-arrow');
+      if (a) a.classList.add('open');
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════
+   CSV
+═══════════════════════════════════════════ */
+function deepFlatten(obj, p, res) {
+  if (obj === null || obj === undefined) { res[p] = ''; return; }
+  if (typeof obj !== 'object') { res[p] = obj; return; }
+  if (Array.isArray(obj)) {
+    if (!obj.length) { res[p] = '[]'; return; }
+    if (typeof obj[0] !== 'object') { res[p] = obj.join('; '); return; }
+    obj.forEach((x, i) => deepFlatten(x, p ? `${p}[${i}]` : `[${i}]`, res));
+    return;
+  }
+  Object.entries(obj).forEach(([k, v]) => deepFlatten(v, p ? `${p}.${k}` : k, res));
+}
+function buildCSVData(data) {
+  let rows = Array.isArray(data) ? data : null;
+  if (!rows) {
+    const ak = Object.keys(data).find(k => Array.isArray(data[k]) && data[k].length > 0 && typeof data[k][0] === 'object');
+    rows = ak ? data[ak] : null;
+  }
+  if (!rows) rows = [data];
+  csvRows = rows.map(r => { const res = {}; deepFlatten(r, '', res); return res; });
+  csvKeys = [...new Set(csvRows.flatMap(r => Object.keys(r)))].filter(k => k !== '');
+}
+function renderPrimFields() {
+  if (!csvKeys.length) return;
+  const typeFor = k => {
+    const v = String(csvRows[0]?.[k] ?? '');
+    if (v !== '' && !isNaN(Number(v))) return { t: 'num', c: 'pill-num' };
+    if (v === 'true' || v === 'false') return { t: 'bool', c: 'pill-bool' };
+    return { t: 'str', c: 'pill-str' };
+  };
+  document.getElementById('csv-fields').innerHTML = csvKeys.map(k => {
+    const { t, c } = typeFor(k);
+    return `<label class="fcheck on">
+      <input type="checkbox" checked value="${k}" onchange="updatePrimInfo()">
+      <span class="fcheck-lbl" title="${k}">${k}</span>
+      <span class="mpill ${c}">${t}</span>
+    </label>`;
+  }).join('');
+  updatePrimInfo();
+}
+function updatePrimInfo() {
+  const sel = getSelected();
+  document.getElementById('prim-info').textContent = `${sel.length} of ${csvKeys.length} fields selected · ${csvRows.length} row(s)`;
+  document.querySelectorAll('.fcheck').forEach(fc => fc.classList.toggle('on', fc.querySelector('input').checked));
+}
+function selAll(v) { document.querySelectorAll('#csv-fields input[type=checkbox]').forEach(cb => cb.checked = v); updatePrimInfo(); }
+function getSelected() { return [...document.querySelectorAll('#csv-fields input[type=checkbox]:checked')].map(cb => cb.value); }
+
+function renderFullTable() {
+  if (!csvKeys.length) return;
+  document.getElementById('full-info').textContent = `${csvRows.length} row(s) · ${csvKeys.length} column(s)`;
+  let html = `<table class="ctbl"><thead><tr>${csvKeys.map(k => `<th title="Double-click to copy column">${k}</th>`).join('')}</tr></thead><tbody>`;
+  csvRows.forEach(row => {
+    html += `<tr>${csvKeys.map(k => {
+      const v = String(row[k] ?? '');
+      return `<td title="${v.replace(/"/g, '&quot;')}" ondblclick="dblCopyCell(this,'${v.replace(/'/g, '\\\'')}')">${v}</td>`;
+    }).join('')}</tr>`;
+  });
+  document.getElementById('csv-full-scroll').innerHTML = html + '</tbody></table>';
+}
+function dblCopyCell(el, val) {
+  navigator.clipboard.writeText(val);
+  el.classList.add('copy-flash');
+  setTimeout(() => el.classList.remove('copy-flash'), 500);
+  toast('✓ Cell value copied');
+}
+
+/* ─── Download (FIXED) ─── */
+function makeCSV(keys, rows) {
+  const hdr = keys.map(k => `"${k.replace(/"/g, '""')}"`).join(',');
+  const body = rows.map(r => keys.map(k => `"${String(r[k] ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  return hdr + '\r\n' + body;
+}
+function makeXML(keys, rows) {
+  let x = `<?xml version="1.0" encoding="UTF-8"?>\n<report>\n`;
+  rows.forEach(row => {
+    x += `  <record>\n`;
+    keys.forEach(k => {
+      const tag = k.replace(/[^a-zA-Z0-9_]/g, '_') || 'field';
+      x += `    <${tag}>${String(row[k] ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</${tag}>\n`;
+    });
+    x += `  </record>\n`;
+  });
+  return x + '</report>';
+}
+
 function triggerDownload(content, filename, mimeType) {
   try {
-    const blob = new Blob([content], { type: mimeType })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.style.display = 'none'
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
     setTimeout(() => {
-      URL.revokeObjectURL(url)
-      if (a.parentNode) document.body.removeChild(a)
-    }, 1000)
-    toast('✓ ' + filename + ' downloaded')
-  } catch(e) {
-    toast('⚠ Download error: ' + e.message)
+      URL.revokeObjectURL(url);
+      if (a.parentNode) document.body.removeChild(a);
+    }, 1000);
+    toast('✓ ' + filename + ' downloaded');
+  } catch (e) {
+    toast('⚠ Download failed: ' + e.message, true);
   }
 }
-function base(){return(FNAME||'export').replace('.json','')}
-function dlPrimCSV(){const s=getSel();if(!s.length){toast('Select at least one field');return}triggerDownload(makeCSV(s,csvRows),base()+'_primary.csv','text/csv;charset=utf-8;')}
-function dlPrimXML(){const s=getSel();if(!s.length){toast('Select at least one field');return}triggerDownload(makeXML(s,csvRows),base()+'_primary.xml','application/xml;charset=utf-8;')}
-function dlFullCSV(){if(!csvKeys.length){toast('No data loaded');return}triggerDownload(makeCSV(csvKeys,csvRows),base()+'_full.csv','text/csv;charset=utf-8;')}
-function dlFullXML(){if(!csvKeys.length){toast('No data loaded');return}triggerDownload(makeXML(csvKeys,csvRows),base()+'_full.xml','application/xml;charset=utf-8;')}
-function copyCSV(){if(!csvKeys.length)return;navigator.clipboard.writeText(makeCSV(csvKeys,csvRows));toast('✓ CSV copied')}
-/* Visualizer */
-const CW=220,CG=88,RG=18,MR=13
-function vdisplay(v){if(v===null)return{h:`<span class="jv-null">null</span>`,ref:false};if(typeof v==='string')return{h:`<span class="jv-str">"${v.length>24?v.slice(0,24)+'…':v}"</span>`,ref:false};if(typeof v==='number')return{h:`<span class="jv-num">${v}</span>`,ref:false};if(typeof v==='boolean')return{h:`<span class="jv-bool">${v}</span>`,ref:false};if(Array.isArray(v))return{h:`<span class="jv-ref">▸ [${v.length}]</span>`,ref:true};if(typeof v==='object')return{h:`<span class="jv-ref">▸ {${Object.keys(v).length}}</span>`,ref:true};return{h:'',ref:false}}
-function buildGraph(val,label,pid){const id=vizNodes.length,isA=Array.isArray(val),isO=val&&typeof val==='object'&&!isA;if(!isA&&!isO){const{h}=vdisplay(val);vizNodes.push({id,pid,label,type:'val',rows:[{k:null,vh:h}],cids:[]});return id}const ents=isA?val.map((v,i)=>[String(i),v]):Object.entries(val);const rows=[],ch=[];ents.forEach(([k,v])=>{const{h,ref}=vdisplay(v);rows.push({k,vh:h,ref});if(ref)ch.push({key:isA?`[${k}]`:k,val:v})});vizNodes.push({id,pid,label,type:isA?'arr':'obj',rows,cids:[]});vizNodes[id].cids=ch.map(c=>buildGraph(c.val,c.key,id));return id}
-function layout(){const cols=[];function ac(id,col){const n=vizNodes[id];n.col=col;if(!cols[col])cols[col]=[];cols[col].push(id);n.cids.forEach(cid=>ac(cid,col+1))};if(vizNodes.length)ac(0,0);vizNodes.forEach(n=>{n.h=34+Math.min(n.rows.length,MR)*22+(n.rows.length>MR?18:0)});cols.forEach(col=>{let y=30;col.forEach(id=>{vizNodes[id].y=y;y+=vizNodes[id].h+RG})});function cp(id){const n=vizNodes[id];if(!n.cids.length)return;n.cids.forEach(cid=>cp(cid));const ys=n.cids.map(cid=>vizNodes[cid].y+vizNodes[cid].h/2);n.y=Math.max(30,ys.reduce((a,b)=>a+b,0)/ys.length-n.h/2)};if(vizNodes.length)cp(0);const mc=Math.max(...vizNodes.map(n=>n.col),0);vizW=(mc+1)*(CW+CG)+80;vizH=Math.max(...vizNodes.map(n=>n.y+n.h),400)+60}
-function applyT(){document.getElementById('viz-stage').style.transform=`translate(${vizOffX}px,${vizOffY}px) scale(${vizScale})`;document.getElementById('viz-zoom-lbl').textContent=Math.round(vizScale*100)+'%'}
-function vzoom(d){const wrap=document.getElementById('viz-wrap'),cx=wrap.clientWidth/2,cy=wrap.clientHeight/2,ns=Math.max(0.15,Math.min(3,vizScale+d));vizOffX=cx-(cx-vizOffX)*ns/vizScale;vizOffY=cy-(cy-vizOffY)*ns/vizScale;vizScale=ns;applyT()}
-function fitViz(){if(!vizW)return;const wrap=document.getElementById('viz-wrap'),sx=(wrap.clientWidth-40)/vizW,sy=(wrap.clientHeight-40)/vizH;vizScale=Math.min(sx,sy,1)*0.9;vizOffX=(wrap.clientWidth-vizW*vizScale)/2;vizOffY=(wrap.clientHeight-vizH*vizScale)/2;applyT()}
-function resetViz(){vizScale=1;vizOffX=20;vizOffY=20;applyT()}
-function vizFind(q){document.querySelectorAll('.jcard').forEach(c=>c.classList.remove('found-hl','found-active'));vizFindMatches=[];vizFindIdx=0;const lq=q.toLowerCase().trim();if(!lq){document.getElementById('viz-find-count').textContent='';return};document.querySelectorAll('.jcard').forEach(c=>{if(c.textContent.toLowerCase().includes(lq)){c.classList.add('found-hl');vizFindMatches.push(c)}});if(vizFindMatches.length){vizFindMatches[0].classList.add('found-active');scrollToCard(vizFindMatches[0])};document.getElementById('viz-find-count').textContent=vizFindMatches.length?`${vizFindIdx+1}/${vizFindMatches.length}`:'0 found'}
-function vizFindNav(e){if(!vizFindMatches.length)return;if(e.key==='Enter'||e.key==='ArrowDown'){e.preventDefault();vizFindMatches[vizFindIdx].classList.remove('found-active');vizFindIdx=(vizFindIdx+1)%vizFindMatches.length;vizFindMatches[vizFindIdx].classList.add('found-active');scrollToCard(vizFindMatches[vizFindIdx]);document.getElementById('viz-find-count').textContent=`${vizFindIdx+1}/${vizFindMatches.length}`}if(e.key==='ArrowUp'){e.preventDefault();vizFindMatches[vizFindIdx].classList.remove('found-active');vizFindIdx=(vizFindIdx-1+vizFindMatches.length)%vizFindMatches.length;vizFindMatches[vizFindIdx].classList.add('found-active');scrollToCard(vizFindMatches[vizFindIdx]);document.getElementById('viz-find-count').textContent=`${vizFindIdx+1}/${vizFindMatches.length}`}}
-function scrollToCard(card){const x=parseFloat(card.style.left),y=parseFloat(card.style.top),wrap=document.getElementById('viz-wrap');vizOffX=-(x*vizScale-wrap.clientWidth/2+CW*vizScale/2);vizOffY=-(y*vizScale-wrap.clientHeight/2);applyT()}
-function renderViz(){if(!DATA)return;vizNodes=[];vizScale=1;vizOffX=20;vizOffY=20;buildGraph(DATA,'root',-1);layout();const stage=document.getElementById('viz-stage'),svg=document.getElementById('viz-svg');stage.querySelectorAll('.jcard').forEach(c=>c.remove());svg.innerHTML='';stage.style.width=vizW+'px';stage.style.height=vizH+'px';svg.setAttribute('width',vizW);svg.setAttribute('height',vizH);vizNodes.forEach(n=>{if(n.pid<0)return;const p=vizNodes[n.pid],x1=p.col*(CW+CG)+CW,y1=p.y+p.h/2,x2=n.col*(CW+CG),y2=n.y+n.h/2,mx=(x1+x2)/2;const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);path.setAttribute('stroke','rgba(100,116,139,0.3)');path.setAttribute('stroke-width','1.5');path.setAttribute('fill','none');svg.appendChild(path);const arr=document.createElementNS('http://www.w3.org/2000/svg','polygon');arr.setAttribute('points',`${x2},${y2} ${x2-8},${y2-4} ${x2-8},${y2+4}`);arr.setAttribute('fill','rgba(100,116,139,0.45)');svg.appendChild(arr)});vizNodes.forEach((n,i)=>{const x=n.col*(CW+CG),card=document.createElement('div');card.className='jcard';card.dataset.nid=i;card.style.left=x+'px';card.style.top=n.y+'px';card.style.width=CW+'px';const tl=n.type==='arr'?'array':n.type==='obj'?'object':'value',tc=n.type==='arr'?'jtype-arr':n.type==='obj'?'jtype-obj':'jtype-val',hc=n.type==='arr'?'harr':n.type==='obj'?'hobj':'hval';card.innerHTML=`<div class="jcard-head ${hc}">${n.label}<span class="jtype ${tc}">${tl}</span></div>`;n.rows.slice(0,MR).forEach(r=>{const el=document.createElement('div');el.className='jcard-row';el.innerHTML=r.k!==null?`<span class="jcard-k">${r.k}</span><span class="jcard-v">${r.vh}</span>`:`<span class="jcard-v" style="text-align:left">${r.vh}</span>`;card.appendChild(el)});if(n.rows.length>MR){const m=document.createElement('div');m.className='jcard-more';m.textContent=`+ ${n.rows.length-MR} more`;card.appendChild(m)};stage.appendChild(card)});applyT()}
-;(function(){const wrap=document.getElementById('viz-wrap');let drag=false,sx=0,sy=0,sox=0,soy=0;wrap.addEventListener('mousedown',e=>{if(e.button!==0)return;drag=true;sx=e.clientX;sy=e.clientY;sox=vizOffX;soy=vizOffY;wrap.classList.add('panning');e.preventDefault()});window.addEventListener('mousemove',e=>{if(!drag)return;vizOffX=sox+(e.clientX-sx);vizOffY=soy+(e.clientY-sy);applyT()});window.addEventListener('mouseup',()=>{drag=false;document.getElementById('viz-wrap').classList.remove('panning')});wrap.addEventListener('wheel',e=>{e.preventDefault();vizOffX-=e.deltaX;vizOffY-=e.deltaY;applyT()},{passive:false})})()
+
+function baseName() { return (FNAME || 'export').replace(/\.json$/i, ''); }
+function dlPrimCSV() {
+  const sel = getSelected();
+  if (!sel.length) { toast('Select at least one field', true); return; }
+  triggerDownload(makeCSV(sel, csvRows), baseName() + '_primary.csv', 'text/csv;charset=utf-8;');
+}
+function dlPrimXML() {
+  const sel = getSelected();
+  if (!sel.length) { toast('Select at least one field', true); return; }
+  triggerDownload(makeXML(sel, csvRows), baseName() + '_primary.xml', 'application/xml;charset=utf-8;');
+}
+function dlFullCSV() {
+  if (!csvKeys.length) { toast('No data loaded', true); return; }
+  triggerDownload(makeCSV(csvKeys, csvRows), baseName() + '_full.csv', 'text/csv;charset=utf-8;');
+}
+function dlFullXML() {
+  if (!csvKeys.length) { toast('No data loaded', true); return; }
+  triggerDownload(makeXML(csvKeys, csvRows), baseName() + '_full.xml', 'application/xml;charset=utf-8;');
+}
+function copyCSV() {
+  if (!csvKeys.length) return;
+  navigator.clipboard.writeText(makeCSV(csvKeys, csvRows));
+  toast('✓ CSV copied to clipboard');
+}
+
+/* ═══════════════════════════════════════════
+   VISUALIZER
+═══════════════════════════════════════════ */
+const CW = 220, CG = 88, RG = 18, MR = 13;
+
+function vDisplay(v) {
+  if (v === null) return { h: `<span class="jv-null">null</span>`, ref: false };
+  if (typeof v === 'string') return { h: `<span class="jv-str">"${v.length > 24 ? v.slice(0, 24) + '…' : v}"</span>`, ref: false };
+  if (typeof v === 'number') return { h: `<span class="jv-num">${v}</span>`, ref: false };
+  if (typeof v === 'boolean') return { h: `<span class="jv-bool">${v}</span>`, ref: false };
+  if (Array.isArray(v)) return { h: `<span class="jv-ref">▸ [${v.length}]</span>`, ref: true };
+  if (typeof v === 'object') return { h: `<span class="jv-ref">▸ {${Object.keys(v).length}}</span>`, ref: true };
+  return { h: '', ref: false };
+}
+function buildGraph(val, label, pid) {
+  const id = vizNodes.length;
+  const isA = Array.isArray(val), isO = val && typeof val === 'object' && !isA;
+  if (!isA && !isO) {
+    const { h } = vDisplay(val);
+    vizNodes.push({ id, pid, label, type: 'val', rows: [{ k: null, vh: h }], cids: [], rawVal: val });
+    return id;
+  }
+  const ents = isA ? val.map((v, i) => [String(i), v]) : Object.entries(val);
+  const rows = [], ch = [];
+  ents.forEach(([k, v]) => {
+    const { h, ref } = vDisplay(v);
+    rows.push({ k, vh: h, ref, rawVal: v });
+    if (ref) ch.push({ key: isA ? `[${k}]` : k, val: v });
+  });
+  vizNodes.push({ id, pid, label, type: isA ? 'arr' : 'obj', rows, cids: [], rawVal: val });
+  vizNodes[id].cids = ch.map(c => buildGraph(c.val, c.key, id));
+  return id;
+}
+function layoutViz() {
+  const cols = [];
+  function ac(id, col) {
+    const n = vizNodes[id]; n.col = col;
+    if (!cols[col]) cols[col] = []; cols[col].push(id);
+    n.cids.forEach(cid => ac(cid, col + 1));
+  }
+  if (vizNodes.length) ac(0, 0);
+  vizNodes.forEach(n => { n.h = 34 + Math.min(n.rows.length, MR) * 22 + (n.rows.length > MR ? 18 : 0); });
+  cols.forEach(col => {
+    let y = 30;
+    col.forEach(id => { vizNodes[id].y = y; y += vizNodes[id].h + RG; });
+  });
+  function cp(id) {
+    const n = vizNodes[id];
+    if (!n.cids.length) return;
+    n.cids.forEach(cid => cp(cid));
+    const ys = n.cids.map(cid => vizNodes[cid].y + vizNodes[cid].h / 2);
+    n.y = Math.max(30, ys.reduce((a, b) => a + b, 0) / ys.length - n.h / 2);
+  }
+  if (vizNodes.length) cp(0);
+  const mc = Math.max(...vizNodes.map(n => n.col), 0);
+  vizW = (mc + 1) * (CW + CG) + 80;
+  vizH = Math.max(...vizNodes.map(n => n.y + n.h), 400) + 60;
+}
+function applyVizT() {
+  document.getElementById('viz-stage').style.transform = `translate(${vizOffX}px,${vizOffY}px) scale(${vizScale})`;
+  document.getElementById('viz-zoom-lbl').textContent = Math.round(vizScale * 100) + '%';
+}
+function vzoom(d) {
+  const wrap = document.getElementById('viz-wrap');
+  const cx = wrap.clientWidth / 2, cy = wrap.clientHeight / 2;
+  const ns = Math.max(0.1, Math.min(3, vizScale + d));
+  vizOffX = cx - (cx - vizOffX) * ns / vizScale;
+  vizOffY = cy - (cy - vizOffY) * ns / vizScale;
+  vizScale = ns;
+  applyVizT();
+}
+function fitViz() {
+  if (!vizW) return;
+  const wrap = document.getElementById('viz-wrap');
+  const sx = (wrap.clientWidth - 40) / vizW, sy = (wrap.clientHeight - 40) / vizH;
+  vizScale = Math.min(sx, sy, 1) * 0.9;
+  vizOffX = (wrap.clientWidth - vizW * vizScale) / 2;
+  vizOffY = (wrap.clientHeight - vizH * vizScale) / 2;
+  applyVizT();
+}
+function resetViz() { vizScale = 1; vizOffX = 20; vizOffY = 20; applyVizT(); }
+
+function vizFind(q) {
+  document.querySelectorAll('.jcard').forEach(c => c.classList.remove('found-hl', 'found-active'));
+  vizMatches = []; vizMatchIdx = 0;
+  const lq = q.toLowerCase().trim();
+  if (!lq) { document.getElementById('viz-find-count').textContent = ''; return; }
+  document.querySelectorAll('.jcard').forEach(c => {
+    if (c.textContent.toLowerCase().includes(lq)) {
+      c.classList.add('found-hl');
+      vizMatches.push(c);
+    }
+  });
+  if (vizMatches.length) {
+    vizMatches[0].classList.add('found-active');
+    scrollToVizCard(vizMatches[0]);
+  }
+  document.getElementById('viz-find-count').textContent = vizMatches.length ? `${vizMatchIdx + 1}/${vizMatches.length}` : '0';
+}
+function vizFindNav(e) {
+  if (!vizMatches.length) return;
+  if (e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); vizFindStep(1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); vizFindStep(-1); }
+}
+function vizFindStep(dir) {
+  vizMatches[vizMatchIdx].classList.remove('found-active');
+  vizMatchIdx = (vizMatchIdx + dir + vizMatches.length) % vizMatches.length;
+  vizMatches[vizMatchIdx].classList.add('found-active');
+  scrollToVizCard(vizMatches[vizMatchIdx]);
+  document.getElementById('viz-find-count').textContent = `${vizMatchIdx + 1}/${vizMatches.length}`;
+}
+function scrollToVizCard(card) {
+  const x = parseFloat(card.style.left), y = parseFloat(card.style.top);
+  const wrap = document.getElementById('viz-wrap');
+  vizOffX = -(x * vizScale - wrap.clientWidth / 2 + CW * vizScale / 2);
+  vizOffY = -(y * vizScale - wrap.clientHeight / 2);
+  applyVizT();
+}
+
+function renderViz() {
+  if (!DATA) return;
+  vizNodes = []; vizScale = 1; vizOffX = 20; vizOffY = 20;
+  buildGraph(DATA, 'root', -1);
+  layoutViz();
+  const stage = document.getElementById('viz-stage'), svg = document.getElementById('viz-svg');
+  stage.querySelectorAll('.jcard').forEach(c => c.remove());
+  svg.innerHTML = '';
+  stage.style.width = vizW + 'px'; stage.style.height = vizH + 'px';
+  svg.setAttribute('width', vizW); svg.setAttribute('height', vizH);
+
+  // Draw edges
+  vizNodes.forEach(n => {
+    if (n.pid < 0) return;
+    const p = vizNodes[n.pid];
+    const x1 = p.col * (CW + CG) + CW, y1 = p.y + p.h / 2;
+    const x2 = n.col * (CW + CG), y2 = n.y + n.h / 2;
+    const mx = (x1 + x2) / 2;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+    path.setAttribute('stroke', 'rgba(110,168,255,0.2)');
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    svg.appendChild(path);
+    const arr = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    arr.setAttribute('points', `${x2},${y2} ${x2 - 8},${y2 - 4} ${x2 - 8},${y2 + 4}`);
+    arr.setAttribute('fill', 'rgba(110,168,255,0.3)');
+    svg.appendChild(arr);
+  });
+
+  // Draw cards
+  vizNodes.forEach((n, i) => {
+    const x = n.col * (CW + CG);
+    const card = document.createElement('div');
+    card.className = 'jcard'; card.dataset.nid = i;
+    card.style.left = x + 'px'; card.style.top = n.y + 'px'; card.style.width = CW + 'px';
+    const tl = n.type === 'arr' ? 'array' : n.type === 'obj' ? 'object' : 'value';
+    const tc = n.type === 'arr' ? 'jtype-arr' : n.type === 'obj' ? 'jtype-obj' : 'jtype-val';
+    const hc = n.type === 'arr' ? 'harr' : n.type === 'obj' ? 'hobj' : 'hval';
+    const head = document.createElement('div');
+    head.className = `jcard-head ${hc}`;
+    head.innerHTML = `${n.label}<span class="jtype ${tc}">${tl}</span>`;
+    head.title = 'Double-click to copy';
+    head.ondblclick = () => {
+      navigator.clipboard.writeText(JSON.stringify(n.rawVal, null, 2));
+      toast(`✓ "${n.label}" copied`);
+    };
+    card.appendChild(head);
+    n.rows.slice(0, MR).forEach(row => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'jcard-row';
+      rowEl.innerHTML = row.k !== null
+        ? `<span class="jcard-k">${row.k}</span><span class="jcard-v">${row.vh}</span>`
+        : `<span class="jcard-v" style="text-align:left">${row.vh}</span>`;
+      const rawV = String(row.rawVal ?? '');
+      rowEl.title = `Double-click to copy: ${rawV.slice(0, 50)}`;
+      rowEl.ondblclick = () => {
+        navigator.clipboard.writeText(rawV);
+        toast(`✓ "${row.k || 'value'}" copied`);
+      };
+      card.appendChild(rowEl);
+    });
+    if (n.rows.length > MR) {
+      const more = document.createElement('div');
+      more.className = 'jcard-more';
+      more.textContent = `+ ${n.rows.length - MR} more fields`;
+      card.appendChild(more);
+    }
+    stage.appendChild(card);
+  });
+  applyVizT();
+}
+
+/* Visualizer pan & scroll */
+(function () {
+  const wrap = document.getElementById('viz-wrap');
+  let drag = false, sx = 0, sy = 0, sox = 0, soy = 0;
+  wrap.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    drag = true; sx = e.clientX; sy = e.clientY; sox = vizOffX; soy = vizOffY;
+    wrap.classList.add('panning'); e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return;
+    vizOffX = sox + (e.clientX - sx); vizOffY = soy + (e.clientY - sy);
+    applyVizT();
+  });
+  window.addEventListener('mouseup', () => { drag = false; document.getElementById('viz-wrap').classList.remove('panning'); });
+  // Scroll = pan only (NO zoom on scroll)
+  wrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    vizOffX -= e.deltaX; vizOffY -= e.deltaY;
+    applyVizT();
+  }, { passive: false });
+})();
 </script>
 </body>
 </html>
